@@ -1,1 +1,2 @@
-# NodeSentinel
+![logo](NodeSentinel.png)
+
