@@ -10,7 +10,7 @@ Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. Docker
 
 ## UI design
 
-Main color palette for this project is tailwinds mist palette. Blue will be used as brand color. Design also includes obvious semantic colors for destructive action and etc.
+Main color palette for this project is tailwinds mist palette. Blue will be used as brand color. Design also includes obvious semantic colors for destructive action and etc. Project uses icons from Heroicons and Lucide.
 
 ## Database
 
