@@ -35,6 +35,8 @@ Visual structure of the project
 
 ## Database Schema
 
+![diagram](Diagrams/NodeSentinelDB.png)
+
 ## Known limitations
 
 - One server cant support many dedicated servers, due to one server infrastructure
