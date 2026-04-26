@@ -8,6 +8,13 @@ namespace client.Models
         public Task Delete(string serverName, string backupName);
         public string GetBackupPath(string serverName) => Path.Combine(AppContext.BaseDirectory, "backups", serverName);
         public string GetServerPath(string serverName) => Path.Combine(AppContext.BaseDirectory, "servers", serverName);
+        public static Dictionary<ServerType, IBackupManager> GetBackupManager()
+        {
+            return new Dictionary<ServerType, IBackupManager>
+            {
+                { ServerType.TMODLOADER, new TmodBackupManager() },
+            };
+        }
 
     }
 }

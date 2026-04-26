@@ -17,19 +17,21 @@ namespace client.Models
         public string CommandSender { get; init; }
         public string DefaultPort { get; init; }
         public string DefaultImage { get; init; }
+        public string DataLocation { get; init; }
 
-        public ServerTypeData(string commandSender, string defaultPort, string defaultImage)
+        public ServerTypeData(string commandSender, string defaultPort, string defaultImage, string dataLocation)
         {
             CommandSender = commandSender;
             DefaultPort = defaultPort;
             DefaultImage = defaultImage;
+            DataLocation = dataLocation;
         }
         public static IReadOnlyDictionary<ServerType, ServerTypeData> SPECIFICS = new Dictionary<ServerType, ServerTypeData>()
         {
-            {ServerType.TERRARIA,new("inject","7777","passivelemon/terraria-docker:terraria-latest")},
-            {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest")},
-            {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest")},
-            {ServerType.VALHEIM,new("bash -c","2456","lloesche/valheim-server")},
+            {ServerType.TERRARIA,new("inject","7777","passivelemon/terraria-docker:terraria-latest","/opt/terraria/config")},
+            {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest","/data")},
+            {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest","/data")},
+            {ServerType.VALHEIM,new("bash -c","2456","lloesche/valheim-server","/config")},
 
         };
 

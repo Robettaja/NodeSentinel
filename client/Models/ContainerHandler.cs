@@ -31,9 +31,7 @@ namespace client.Models
                 },
 
             },
-                Binds = [$"{AppContext.BaseDirectory + "servers/" + containerData.ServerName}:/opt/terraria/config"]
-
-
+                Binds = [$"{AppContext.BaseDirectory + "servers/" + containerData.ServerName}:{ServerTypeData.SPECIFICS[containerData.ServerType].DataLocation}"]
             };
             CreateContainerParameters parameters = new()
             {

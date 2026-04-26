@@ -124,3 +124,5 @@ tsconfig.local.json
 /cypress/screenshots/
 playwright-report/
 test-results/
+
+.http
