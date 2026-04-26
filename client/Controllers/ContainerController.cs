@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using client.Models;
+using Docker.DotNet.Models;
 
 namespace client.Controllers
 {
@@ -7,66 +8,81 @@ namespace client.Controllers
     [Route("container")]
     public class ContainerController : ControllerBase
     {
-        ContainerHandler containerHandler = new();
 
-        [HttpPost("{id}/create")]
-        public async Task<IActionResult> Create(string id, [FromBody] ContainerData data)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromBody] ContainerData data)
         {
-            if (await containerHandler.Create(data, new CancellationToken()))
+            if (await ContainerHandler.Create(data, new CancellationToken()))
             {
-                return BadRequest("Server with this name already exist");
+                return Ok("Server created successfully");
 
             }
-            Console.WriteLine("created container");
-            return Ok("Server created successfully");
+            return BadRequest("Server with this name already exist");
 
         }
 
-        [HttpPost("{id}/start")]
-        public async Task<IActionResult> Start(string id, [FromBody] string name)
+        [HttpPost("{serverName}/start")]
+        public async Task<IActionResult> Start(string serverName)
         {
-            await containerHandler.Start(name, new CancellationToken());
+            await ContainerHandler.Start(serverName, new CancellationToken());
             return Ok();
         }
 
-        [HttpPost("{id}/restart")]
-        public async Task<IActionResult> Restart(string id, [FromBody] string name)
+        [HttpPost("{serverName}/restart")]
+        public async Task<IActionResult> Restart(string serverName)
         {
-            await containerHandler.Restart(name, new CancellationToken());
+            await ContainerHandler.Restart(serverName, new CancellationToken());
             return Ok();
         }
-        [HttpPost("{id}/stop")]
-        public async Task<IActionResult> Stop(string id, [FromBody] string name)
+        [HttpPost("{serverName}/stop")]
+        public async Task<IActionResult> Stop(string serverName)
         {
-            await containerHandler.Stop(name, new CancellationToken());
+            await ContainerHandler.Stop(serverName, new CancellationToken());
             return Ok();
         }
-        [HttpPost("{id}/command")]
-        public async Task<IActionResult> Command(string id, [FromBody] string name, [FromBody] string command)
+        [HttpPost("{serverName}/command")]
+        public async Task<IActionResult> Command(string serverName, [FromBody] string command, [FromQuery] ServerType type)
         {
-            string data = await containerHandler.ExecRconCli(name, command, new CancellationToken());
+            string data = await ContainerHandler.Command(serverName, command, type, new CancellationToken());
             return Ok(data);
         }
 
-        [HttpGet("{id}/logs")]
-        public async Task<IActionResult> Logs(string id, string name)
+        [HttpGet("{serverName}/logs")]
+        public async Task<IActionResult> Logs(string serverName)
         {
-            string logs = await containerHandler.Logs(name, new CancellationToken());
+            string logs = await ContainerHandler.Logs(serverName, new CancellationToken());
 
             return Ok(logs);
         }
 
-        [HttpGet("{id}/status")]
-        public async Task<IActionResult> Status(string id, string name)
+        [HttpGet("{serverName}/status")]
+        public async Task<IActionResult> Status(string serverName)
         {
-            string status = await containerHandler.Status(name, new CancellationToken());
+            string status = await ContainerHandler.Status(serverName, new CancellationToken());
             return Ok(status);
         }
-
-        [HttpDelete("{id}/remove")]
-        public async Task<IActionResult> Remove(string id, [FromBody] string name)
+        [HttpGet("{serverName}/stats")]
+        public async Task<IActionResult> Stats(string serverName)
         {
-            await containerHandler.Delete(name, new CancellationToken());
+            SystemData status = await ContainerHandler.Stats(serverName, new CancellationToken());
+            return Ok(status);
+        }
+        [HttpGet("availableport")]
+        public async Task<IActionResult> AvaiablePort(int startPort)
+        {
+            return Ok(PortFinder.GetNextAvailablePort(startPort));
+        }
+        [HttpPost("{serverName}/edit")]
+        public async Task<IActionResult> Edit(string serverName, ContainerData data)
+        {
+            await ContainerHandler.Edit(data, serverName, new CancellationToken());
+            return Ok();
+        }
+
+        [HttpDelete("{serverName}/delete")]
+        public async Task<IActionResult> Delete(string serverName)
+        {
+            await ContainerHandler.Delete(serverName, new CancellationToken());
             return Ok();
 
         }

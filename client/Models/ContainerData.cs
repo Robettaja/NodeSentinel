@@ -6,8 +6,7 @@ namespace client.Models
         public string ServerName { get; set; } = string.Empty;
         public bool Tty { get; set; }
         public bool AttachStdin { get; set; }
-        public string? ServerType { get; set; }
-        public string? Image { get; set; }
+        public ServerType ServerType { get; set; }
         public string? Port { get; set; }
         public List<string> Env { get; set; } = [];
     }
