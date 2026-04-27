@@ -1,4 +1,4 @@
-namespace client.Models;
+namespace serverapi.Models;
 
 public class ErrorViewModel
 {

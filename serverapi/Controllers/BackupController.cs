@@ -1,9 +1,9 @@
-using client.Managers;
-using client.Managers.Backup;
-using client.Models;
+using serverapi.Managers;
+using serverapi.Managers.Backup;
+using serverapi.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace client.Controllers;
+namespace serverapi.Controllers;
 
 [ApiController]
 [Route("backup")]

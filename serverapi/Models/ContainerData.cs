@@ -1,7 +1,7 @@
 
-using client.Managers;
+using serverapi.Managers;
 
-namespace client.Models
+namespace serverapi.Models
 {
     public class ContainerData
     {

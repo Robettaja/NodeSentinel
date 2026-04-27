@@ -2,7 +2,7 @@ using System.Text;
 using Docker.DotNet.Models;
 
 
-namespace client.Managers
+namespace serverapi.Managers
 {
     public class ServerTypeData
     {

@@ -1,6 +1,6 @@
-using client.Models;
+using serverapi.Models;
 
-namespace client.Managers.Container
+namespace serverapi.Managers.Container
 {
     public class MinecraftHandler : ContainerHandler
     {

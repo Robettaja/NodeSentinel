@@ -1,4 +1,4 @@
-namespace client.Middleware
+namespace serverapi.Middleware
 {
     public class ApiKeyMiddleware
     {

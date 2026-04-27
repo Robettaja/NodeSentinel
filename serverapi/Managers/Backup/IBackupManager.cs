@@ -1,6 +1,6 @@
-using client.Models;
+using serverapi.Models;
 
-namespace client.Managers.Backup
+namespace serverapi.Managers.Backup
 {
     public interface IBackupManager
     {

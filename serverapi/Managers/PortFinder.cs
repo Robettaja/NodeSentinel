@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
-namespace client.Managers
+namespace serverapi.Managers
 {
     public static class PortFinder
     {

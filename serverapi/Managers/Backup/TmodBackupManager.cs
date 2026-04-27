@@ -1,10 +1,10 @@
-using client.Models;
+using serverapi.Models;
 using Docker.DotNet.Models;
-using client.Managers.Container;
+using serverapi.Managers.Container;
 
-namespace client.Managers.Backup;
+namespace serverapi.Managers.Backup;
 
-public class TerrariaBackupManager : IBackupManager
+public class TmodBackupManager : IBackupManager
 {
 
     public async Task Create(string backupName, string save, string serverName)
@@ -18,7 +18,7 @@ public class TerrariaBackupManager : IBackupManager
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
             Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/Worlds/{save}.wld"],
+            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/tModLoader/Worlds/{save}.wld /source/tModLoader/Worlds/{save}.twld"],
             HostConfig = new HostConfig
             {
                 Binds =

@@ -1,6 +1,6 @@
 using Docker.DotNet.Models;
 
-namespace client.Models
+namespace serverapi.Models
 {
     public class SystemData
     {

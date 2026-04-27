@@ -1,7 +1,7 @@
-using client.Models;
+using serverapi.Models;
 using Docker.DotNet.Models;
 
-namespace client.Managers.Container
+namespace serverapi.Managers.Container
 {
     public class TmodHandler : ContainerHandler
     {

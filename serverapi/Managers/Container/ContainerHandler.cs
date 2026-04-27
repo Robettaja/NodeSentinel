@@ -1,8 +1,8 @@
 using System.Text;
-using client.Models;
+using serverapi.Models;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-namespace client.Managers.Container
+namespace serverapi.Managers.Container
 {
     public abstract class ContainerHandler
     {

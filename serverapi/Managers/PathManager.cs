@@ -1,4 +1,4 @@
-namespace client.Managers
+namespace serverapi.Managers
 {
     public static class PathManager
     {

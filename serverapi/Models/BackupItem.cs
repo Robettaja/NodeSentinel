@@ -1,5 +1,5 @@
 
-namespace client.Models;
+namespace serverapi.Models;
 
 public record BackupItem
 {

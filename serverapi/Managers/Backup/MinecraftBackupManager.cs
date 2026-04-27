@@ -1,8 +1,8 @@
-using client.Models;
+using serverapi.Models;
 using Docker.DotNet.Models;
-using client.Managers.Container;
+using serverapi.Managers.Container;
 
-namespace client.Managers.Backup;
+namespace serverapi.Managers.Backup;
 
 public class MinecraftBackupManager : IBackupManager
 {
