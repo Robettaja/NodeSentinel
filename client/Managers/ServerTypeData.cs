@@ -1,15 +1,8 @@
 using System.Text;
 using Docker.DotNet.Models;
 
-public enum ServerType
-{
-    TERRARIA,
-    TMODLOADER,
-    MINECRAFT,
-    VALHEIM
-}
 
-namespace client.Models
+namespace client.Managers
 {
     public class ServerTypeData
     {
@@ -31,11 +24,17 @@ namespace client.Models
             {ServerType.TERRARIA,new("inject","7777","passivelemon/terraria-docker:terraria-latest","/opt/terraria/config")},
             {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest","/data")},
             {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest","/data")},
-            {ServerType.VALHEIM,new("bash -c","2456","lloesche/valheim-server","/config")},
+            {ServerType.VALHEIM,new("supervisorctl","2456","ghcr.io/community-valheim-tools/valheim-server","/config")},
 
         };
 
-
+    }
+    public enum ServerType
+    {
+        TERRARIA,
+        TMODLOADER,
+        MINECRAFT,
+        VALHEIM
     }
 
 }

@@ -1,4 +1,6 @@
-namespace client.Models
+using client.Models;
+
+namespace client.Managers.Backup
 {
     public interface IBackupManager
     {
@@ -6,13 +8,14 @@ namespace client.Models
         public Task<List<BackupItem>> List(string serverName);
         public Task Restore(string serverName, string backupName);
         public Task Delete(string serverName, string backupName);
-        public string GetBackupPath(string serverName) => Path.Combine(AppContext.BaseDirectory, "backups", serverName);
-        public string GetServerPath(string serverName) => Path.Combine(AppContext.BaseDirectory, "servers", serverName);
-        public static Dictionary<ServerType, IBackupManager> GetBackupManager()
+        public static IReadOnlyDictionary<ServerType, IBackupManager> GetBackupManager()
         {
             return new Dictionary<ServerType, IBackupManager>
             {
+                { ServerType.TERRARIA, new TerrariaBackupManager() },
                 { ServerType.TMODLOADER, new TmodBackupManager() },
+                { ServerType.MINECRAFT, new MinecraftBackupManager() },
+                { ServerType.VALHEIM, new ValheimBackupManager() },
             };
         }
 

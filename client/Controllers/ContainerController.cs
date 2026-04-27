@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using client.Models;
-using Docker.DotNet.Models;
+using client.Managers;
+using client.Managers.Container;
 
 namespace client.Controllers
 {
@@ -12,7 +13,7 @@ namespace client.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] ContainerData data)
         {
-            if (await ContainerHandler.Create(data, new CancellationToken()))
+            if (await ContainerHandler.Handlers()[data.ServerType].Create(data, new CancellationToken()))
             {
                 return Ok("Server created successfully");
 
@@ -54,6 +55,11 @@ namespace client.Controllers
 
             return Ok(logs);
         }
+        [HttpGet("{serverName}/logs/stream")]
+        public async Task StreamLogs(string serverName)
+        {
+            await ContainerHandler.StreamLogs(serverName, Response, "50", HttpContext.RequestAborted);
+        }
 
         [HttpGet("{serverName}/status")]
         public async Task<IActionResult> Status(string serverName)
@@ -75,7 +81,7 @@ namespace client.Controllers
         [HttpPost("{serverName}/edit")]
         public async Task<IActionResult> Edit(string serverName, ContainerData data)
         {
-            await ContainerHandler.Edit(data, serverName, new CancellationToken());
+            await ContainerHandler.Handlers()[data.ServerType].Edit(data, serverName, new CancellationToken());
             return Ok();
         }
 

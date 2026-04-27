@@ -1,3 +1,5 @@
+using client.Managers;
+using client.Managers.Backup;
 using client.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,14 +23,16 @@ public class BackupController : Controller
 
     }
     [HttpPost("{serverName}/restore")]
-    public async Task<IActionResult> Restore(string serverName)
+    public async Task<IActionResult> Restore(string serverName, ServerType type, string backupName)
     {
+        await IBackupManager.GetBackupManager()[type].Restore(serverName, backupName);
         return Ok();
 
     }
     [HttpDelete("{serverName}/delete")]
-    public async Task<IActionResult> Delete(string serverName)
+    public async Task<IActionResult> Delete(string serverName, ServerType type, string backupName)
     {
+        await IBackupManager.GetBackupManager()[type].Delete(serverName, backupName);
         return Ok();
 
     }

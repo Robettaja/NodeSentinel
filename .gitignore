@@ -125,4 +125,4 @@ tsconfig.local.json
 playwright-report/
 test-results/
 
-.http
+*.http

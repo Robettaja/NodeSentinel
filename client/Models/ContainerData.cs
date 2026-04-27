@@ -1,4 +1,6 @@
 
+using client.Managers;
+
 namespace client.Models
 {
     public class ContainerData

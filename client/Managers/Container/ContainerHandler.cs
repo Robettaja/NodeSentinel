@@ -1,10 +1,10 @@
 using System.Text;
+using client.Models;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-
-namespace client.Models
+namespace client.Managers.Container
 {
-    public static class ContainerHandler
+    public abstract class ContainerHandler
     {
         public static DockerClient client;
         static ContainerHandler()
@@ -13,26 +13,29 @@ namespace client.Models
                 new Uri("unix:///var/run/docker.sock")
             ).CreateClient();
         }
-
-        public static async Task<bool> Create(ContainerData containerData, CancellationToken ct)
+        public virtual async Task<bool> Create(ContainerData containerData, CancellationToken ct)
         {
 
             ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
             if (container != null) return false;
+
             string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
             await PullImage(image, ct);
+
+            var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
+
             HostConfig hostConfig = new()
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
             {
                 {
-                    $"{ServerTypeData.SPECIFICS[containerData.ServerType].DefaultPort}/tcp",
+                    $"{serverSpec.DefaultPort}/tcp",
                     new List<PortBinding> { new() { HostPort = containerData.Port } }
-                },
-
+                }
             },
-                Binds = [$"{AppContext.BaseDirectory + "servers/" + containerData.ServerName}:{ServerTypeData.SPECIFICS[containerData.ServerType].DataLocation}"]
+                Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"]
             };
+
             CreateContainerParameters parameters = new()
             {
                 Name = containerData.ServerName,
@@ -42,11 +45,59 @@ namespace client.Models
                 HostConfig = hostConfig,
                 Env = containerData.Env,
             };
-            await client.Containers.CreateContainerAsync(parameters, ct);
-            return true;
 
+            var response = await client.Containers.CreateContainerAsync(parameters, ct);
+            await client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters(), ct);
+            return true;
         }
-        private static async Task PullImage(string image, CancellationToken ct)
+
+        public static async Task<bool> Create2(ContainerData containerData, CancellationToken ct)
+        {
+            ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
+            if (container != null) return false;
+
+            string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
+            await PullImage(image, ct);
+
+            var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
+            var portBindings = new Dictionary<string, IList<PortBinding>>();
+
+            if (containerData.ServerType == ServerType.VALHEIM)
+            {
+                int basePort = int.Parse(containerData.Port);
+                portBindings[$"{basePort}/udp"] = new List<PortBinding> { new() { HostPort = basePort.ToString() } };
+                portBindings[$"{basePort + 1}/udp"] = new List<PortBinding> { new() { HostPort = (basePort + 1).ToString() } };
+                portBindings[$"{basePort + 2}/udp"] = new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } };
+            }
+            else
+            {
+                portBindings[$"{serverSpec.DefaultPort}/tcp"] = new List<PortBinding> { new() { HostPort = containerData.Port } };
+            }
+
+            HostConfig hostConfig = new()
+            {
+                PortBindings = portBindings,
+                Binds = [$"{AppContext.BaseDirectory + "servers/" + containerData.ServerName}:{serverSpec.DataLocation}"],
+                CapAdd = containerData.ServerType == ServerType.VALHEIM
+                    ? new List<string> { "sys_nice" }
+                    : null
+            };
+
+            CreateContainerParameters parameters = new()
+            {
+                Name = containerData.ServerName,
+                Tty = containerData.Tty,
+                Image = image,
+                AttachStdin = containerData.AttachStdin,
+                HostConfig = hostConfig,
+                Env = containerData.Env,
+            };
+
+            var response = await client.Containers.CreateContainerAsync(parameters, ct);
+            await client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters(), ct);
+            return true;
+        }
+        protected static async Task PullImage(string image, CancellationToken ct)
         {
             try
             {
@@ -129,6 +180,44 @@ namespace client.Models
             return "";
 
         }
+        public static async Task StreamLogs(string name, HttpResponse httpResponse, string tailAmount, CancellationToken ct)
+        {
+            ContainerListResponse? container = await GetByName(name, ct);
+            if (container == null) return;
+
+            httpResponse.ContentType = "text/event-stream";
+            httpResponse.Headers.CacheControl = "no-cache";
+            httpResponse.Headers["X-Accel-Buffering"] = "no";
+
+            var parameters = new ContainerLogsParameters
+            {
+                ShowStdout = true,
+                ShowStderr = true,
+                Follow = true,
+                Tail = tailAmount,
+                Timestamps = false
+            };
+
+            var stream = await client.Containers.GetContainerLogsAsync(name, true, parameters, ct);
+            var buffer = new byte[4096];
+
+            try
+            {
+                while (!ct.IsCancellationRequested)
+                {
+                    var result = await stream.ReadOutputAsync(buffer, 0, buffer.Length, ct);
+                    if (result.EOF) break;
+
+                    var text = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                    await httpResponse.WriteAsync(text, ct);
+                    await httpResponse.Body.FlushAsync(ct);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }
         public static async Task<SystemData?> Stats(string name, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(name, ct);
@@ -164,7 +253,7 @@ namespace client.Models
                 AttachStdout = true,
                 AttachStderr = true,
                 Tty = false,
-                Cmd = new[] { ServerTypeData.SPECIFICS[type].CommandSender, command }
+                Cmd = [ServerTypeData.SPECIFICS[type].CommandSender, command]
             };
             var exec = await client.Exec.ExecCreateContainerAsync(name, execParams, ct);
             using var stream = await client.Exec.StartAndAttachContainerExecAsync(exec.ID, false, ct);
@@ -174,23 +263,36 @@ namespace client.Models
             return Encoding.UTF8.GetString(ms.ToArray()).Trim();
 
         }
-        public static async Task Edit(ContainerData data, string oldName, CancellationToken ct)
+        public virtual async Task Edit(ContainerData data, string oldName, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(oldName, ct);
-            if (container != null)
-            {
-                Console.WriteLine("fsfd");
-                await Stop(oldName, ct);
-                Directory.Move($"{AppContext.BaseDirectory + oldName}", $"{AppContext.BaseDirectory + data.ServerName}");
-                await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters
-                {
-                    RemoveVolumes = true,
-                    Force = true
-                }, ct);
-                await Create(data, ct);
+            if (container == null) return;
 
+            await Stop(oldName, ct);
+            await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true }, ct);
+
+            if (oldName != data.ServerName)
+            {
+                var oldPath = PathManager.GetServerPath(oldName);
+                if (Directory.Exists(oldPath))
+                {
+                    var moveContainer = await client.Containers.CreateContainerAsync(new CreateContainerParameters
+                    {
+                        Image = "alpine",
+                        Cmd = ["sh", "-c", $"mv /host/servers/{oldName} /host/servers/{data.ServerName}"],
+                        HostConfig = new HostConfig
+                        {
+                            Binds = [$"{AppContext.BaseDirectory}:/host"],
+                            AutoRemove = true
+                        }
+                    }, ct);
+
+                    bool started = await client.Containers.StartContainerAsync(moveContainer.ID, new ContainerStartParameters(), ct);
+                    await client.Containers.WaitContainerAsync(moveContainer.ID, ct);
+                }
             }
 
+            await Create(data, ct);
         }
         public static async Task Delete(string name, CancellationToken ct)
         {
@@ -203,6 +305,23 @@ namespace client.Models
                     RemoveVolumes = true,
                     Force = true
                 }, ct);
+
+                string basePath = AppContext.BaseDirectory;
+
+                CreateContainerResponse cleanup = await client.Containers.CreateContainerAsync(new CreateContainerParameters
+                {
+                    Image = "alpine",
+                    Cmd = ["sh", "-c", $"rm -rf /host/servers/{name} /host/backups/{name}"],
+                    HostConfig = new HostConfig
+                    {
+                        Binds = [$"{basePath}:/host"],
+                        AutoRemove = true
+                    }
+                }, ct);
+
+                await client.Containers.StartContainerAsync(cleanup.ID, new ContainerStartParameters(), ct);
+                await client.Containers.WaitContainerAsync(cleanup.ID, ct);
+
             }
 
         }
@@ -217,8 +336,16 @@ namespace client.Models
                         { "name", new Dictionary<string, bool> { { name, true } } }
                     }
                 }, ct);
-
             return containers.FirstOrDefault();
+        }
+        public static IReadOnlyDictionary<ServerType, ContainerHandler> Handlers()
+        {
+            return new Dictionary<ServerType, ContainerHandler>(){
+                {ServerType.TERRARIA,new TerrariaHandler()},
+                {ServerType.TMODLOADER,new TmodHandler()},
+                {ServerType.MINECRAFT,new MinecraftHandler()},
+                {ServerType.VALHEIM,new ValheimHandler()},
+            };
         }
     }
 }

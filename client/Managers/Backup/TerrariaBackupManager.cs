@@ -1,22 +1,24 @@
+using client.Models;
 using Docker.DotNet.Models;
+using client.Managers.Container;
 
-namespace client.Models;
+namespace client.Managers.Backup;
 
-public class TmodBackupManager : IBackupManager
+public class TerrariaBackupManager : IBackupManager
 {
 
     public async Task Create(string backupName, string save, string serverName)
     {
         await ContainerHandler.Command(serverName, "save", ServerType.TERRARIA, new CancellationToken());
         await Task.Delay(3000);
-        string serverPath = ((IBackupManager)this).GetServerPath(serverName);
-        string backupPath = ((IBackupManager)this).GetBackupPath(serverName);
+        string serverPath = PathManager.GetServerPath(serverName);
+        string backupPath = PathManager.GetBackupPath(serverName);
         Directory.CreateDirectory(backupPath);
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
             Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/tModLoader/Worlds/{save}.wld /source/tModLoader/Worlds/{save}.twld"],
+            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/Worlds/{save}.wld"],
             HostConfig = new HostConfig
             {
                 Binds =
@@ -33,7 +35,7 @@ public class TmodBackupManager : IBackupManager
 
     public async Task<List<BackupItem>> List(string serverName)
     {
-        string backupPath = ((IBackupManager)this).GetBackupPath(serverName);
+        string backupPath = PathManager.GetBackupPath(serverName);
 
         if (!Directory.Exists(backupPath)) return [];
 
@@ -52,8 +54,8 @@ public class TmodBackupManager : IBackupManager
 
     public async Task Restore(string serverName, string backupName)
     {
-        string serverPath = ((IBackupManager)this).GetServerPath(serverName);
-        string backupPath = ((IBackupManager)this).GetBackupPath(serverName);
+        string serverPath = PathManager.GetServerPath(serverName);
+        string backupPath = PathManager.GetBackupPath(serverName);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
@@ -63,7 +65,7 @@ public class TmodBackupManager : IBackupManager
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
             Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -xf /backup/{backupName} -C /source/"],
+            Cmd = ["sh", "-c", $"tar -xf /backup/{backupName} -C /source/ --strip-components=1"],
             HostConfig = new HostConfig
             {
                 Binds =
@@ -85,12 +87,24 @@ public class TmodBackupManager : IBackupManager
 
     public async Task Delete(string serverName, string backupName)
     {
-        string backupPath = ((IBackupManager)this).GetBackupPath(serverName);
+        string backupPath = PathManager.GetBackupPath(serverName);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
-        await Task.Run(() => File.Delete(backupFile));
+        var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
+        {
+            Image = "alpine",
+            Cmd = ["sh", "-c", $"rm -f /backup/{backupName}"],
+            HostConfig = new HostConfig
+            {
+                Binds = [$"{backupPath}:/backup"],
+                AutoRemove = true
+            }
+        });
+
+        await ContainerHandler.client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
+        await ContainerHandler.client.Containers.WaitContainerAsync(response.ID);
     }
 
 }
