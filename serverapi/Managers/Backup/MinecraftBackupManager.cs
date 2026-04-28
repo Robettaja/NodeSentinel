@@ -1,6 +1,7 @@
 using serverapi.Models;
 using Docker.DotNet.Models;
 using serverapi.Managers.Container;
+using System.Formats.Tar;
 
 namespace serverapi.Managers.Backup;
 
@@ -9,28 +10,15 @@ public class MinecraftBackupManager : IBackupManager
 
     public async Task Create(string backupName, string save, string serverName)
     {
-        await ContainerHandler.Command(serverName, "save", ServerType.TERRARIA, new CancellationToken());
+        await ContainerHandler.Command(serverName, "save-all", ServerType.MINECRAFT, new CancellationToken());
         await Task.Delay(3000);
         string serverPath = PathManager.GetServerPath(serverName);
         string backupPath = PathManager.GetBackupPath(serverName);
+        string backupFile = Path.Combine(backupPath, backupName);
         Directory.CreateDirectory(backupPath);
 
-        var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
-        {
-            Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/tModLoader/Worlds/{save}.wld /source/tModLoader/Worlds/{save}.twld"],
-            HostConfig = new HostConfig
-            {
-                Binds =
-                    [
-                        $"{serverPath}:/source",
-                        $"{backupPath}:/backup"
-                    ],
-                AutoRemove = true
-            }
-        });
-        await ContainerHandler.client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
-        await ContainerHandler.client.Containers.WaitContainerAsync(response.ID);
+        TarFile.CreateFromDirectory(serverPath, backupFile + ".tar", false);
+
     }
 
     public async Task<List<BackupItem>> List(string serverName)
@@ -56,55 +44,26 @@ public class MinecraftBackupManager : IBackupManager
     {
         string serverPath = PathManager.GetServerPath(serverName);
         string backupPath = PathManager.GetBackupPath(serverName);
-        string backupFile = Path.Combine(backupPath, backupName);
+        string backupFile = Path.Combine(backupPath, backupName + ".tar");
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
         await ContainerHandler.Stop(serverName, new CancellationToken());
+        Directory.Delete(serverPath);
+        TarFile.ExtractToDirectory(backupFile, serverPath, false);
 
-        var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
-        {
-            Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -xf /backup/{backupName} -C /source/ --strip-components=1"],
-            HostConfig = new HostConfig
-            {
-                Binds =
-                [
-                    $"{serverPath}:/source",
-                $"{backupPath}:/backup"
-                ],
-                AutoRemove = true
-            }
-        });
-
-        await ContainerHandler.client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
-        await ContainerHandler.client.Containers.WaitContainerAsync(response.ID);
-
-        ContainerListResponse? container = await ContainerHandler.GetByName(serverName, new CancellationToken());
-        if (container != null)
-            await ContainerHandler.client.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
+        await ContainerHandler.Start(serverName, new CancellationToken());
     }
 
     public async Task Delete(string serverName, string backupName)
     {
         string backupPath = PathManager.GetBackupPath(serverName);
-        string backupFile = Path.Combine(backupPath, backupName);
+        string backupFile = Path.Combine(backupPath, backupName + ".tar");
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
+        Directory.Delete(backupFile);
 
-        var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
-        {
-            Image = "alpine",
-            Cmd = ["sh", "-c", $"rm -f /backup/{backupName}"],
-            HostConfig = new HostConfig
-            {
-                Binds = [$"{backupPath}:/backup"],
-                AutoRemove = true
-            }
-        });
 
-        await ContainerHandler.client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
-        await ContainerHandler.client.Containers.WaitContainerAsync(response.ID);
     }
 
 }
