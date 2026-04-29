@@ -31,7 +31,7 @@
                                 <p>Dashboard</p>
                             </a>
 
-                            <a class="flex p-1 mx-1 space-x-1">
+                            <a class="flex p-1 mx-1 space-x-1"asp-action="Index" asp-controller="Server">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
@@ -97,5 +97,31 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function toggleNav() {
+            const navMenu = document.getElementById('navigation')
+            const menuBtn = document.getElementById('menu')
+            const isActive = navMenu.hasAttribute('data-active')
+
+            if (isActive) {
+                navMenu.removeAttribute('data-active')
+                menuBtn.removeAttribute('data-active')
+            } else {
+                navMenu.setAttribute('data-active', '')
+                menuBtn.setAttribute('data-active', '')
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const navMenu = document.getElementById('navigation')
+            const menuBtn = document.getElementById('menu')
+
+            if (!navMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+                navMenu.removeAttribute('data-active')
+                menuBtn.removeAttribute('data-active')
+            }
+        })
+    </script>
 </body>
 </html>
