@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #e3e7e8;
-  --color-bg-main: #090b0c;
-  --color-bg-secondary: #161b1d;
-  --color-bg-1: #22292b;
-  --color-bg-2: #394447;
+  --color-main-950: #090b0c;
+  --color-main-900: #161b1d;
+  --color-main-800: #22292b;
+  --color-main-700: #394447;
+
+  --color-main-200: #e3e7e8;
+
+  --color-main-50: #f9fbfb;
   --color-brand: #2563eb;
 }
 
 @layer base {
   * {
-    @apply text-white;
+    @apply text-mist-50;
   }
 }
 @custom-variant data-active {

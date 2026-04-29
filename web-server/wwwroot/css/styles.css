@@ -12,6 +12,7 @@
     --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-blue-700: oklch(48.8% 0.243 264.376);
     --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-mist-50: oklch(98.7% 0.002 197.1);
     --color-mist-100: oklch(96.3% 0.002 197.1);
     --color-black: #000;
     --color-white: #fff;
@@ -28,11 +29,11 @@
     --radius-xl: 0.75rem;
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --color-text-secondary: #e3e7e8;
-    --color-bg-main: #090b0c;
-    --color-bg-secondary: #161b1d;
-    --color-bg-1: #22292b;
-    --color-bg-2: #394447;
+    --color-main-950: #090b0c;
+    --color-main-900: #161b1d;
+    --color-main-800: #22292b;
+    --color-main-700: #394447;
+    --color-main-200: #e3e7e8;
     --color-brand: #2563eb;
   }
 }
@@ -241,8 +242,20 @@
     width: calc(var(--spacing) * 15);
     height: calc(var(--spacing) * 15);
   }
+  .h-\[100px\] {
+    height: 100px;
+  }
+  .h-\[200px\] {
+    height: 200px;
+  }
   .h-\[520px\] {
     height: 520px;
+  }
+  .h-auto {
+    height: auto;
+  }
+  .h-fit {
+    height: fit-content;
   }
   .h-full {
     height: 100%;
@@ -253,14 +266,23 @@
   .w-0 {
     width: calc(var(--spacing) * 0);
   }
+  .w-1 {
+    width: calc(var(--spacing) * 1);
+  }
   .w-1\/2 {
     width: calc(1 / 2 * 100%);
+  }
+  .w-42 {
+    width: calc(var(--spacing) * 42);
   }
   .w-42\.5 {
     width: calc(var(--spacing) * 42.5);
   }
   .w-64 {
     width: calc(var(--spacing) * 64);
+  }
+  .w-\[50px\] {
+    width: 50px;
   }
   .w-\[75px\] {
     width: 75px;
@@ -280,14 +302,23 @@
   .flex-1 {
     flex: 1;
   }
+  .border-collapse {
+    border-collapse: collapse;
+  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
   .cursor-pointer {
     cursor: pointer;
   }
+  .resize {
+    resize: both;
+  }
   .flex-col {
     flex-direction: column;
+  }
+  .flex-row {
+    flex-direction: row;
   }
   .items-center {
     align-items: center;
@@ -373,20 +404,11 @@
     --tw-border-style: none;
     border-style: none;
   }
-  .border-bg-1 {
-    border-color: var(--color-bg-1);
+  .border-main-800 {
+    border-color: var(--color-main-800);
   }
-  .bg-bg-1 {
-    background-color: var(--color-bg-1);
-  }
-  .bg-bg-2 {
-    background-color: var(--color-bg-2);
-  }
-  .bg-bg-main {
-    background-color: var(--color-bg-main);
-  }
-  .bg-bg-secondary {
-    background-color: var(--color-bg-secondary);
+  .border-main-900 {
+    border-color: var(--color-main-900);
   }
   .bg-blue-600 {
     background-color: var(--color-blue-600);
@@ -394,8 +416,17 @@
   .bg-brand {
     background-color: var(--color-brand);
   }
-  .bg-text-secondary {
-    background-color: var(--color-text-secondary);
+  .bg-main-200 {
+    background-color: var(--color-main-200);
+  }
+  .bg-main-800 {
+    background-color: var(--color-main-800);
+  }
+  .bg-main-900 {
+    background-color: var(--color-main-900);
+  }
+  .bg-main-950 {
+    background-color: var(--color-main-950);
   }
   .p-1 {
     padding: calc(var(--spacing) * 1);
@@ -405,6 +436,9 @@
   }
   .p-3 {
     padding: calc(var(--spacing) * 3);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
   }
   .text-center {
     text-align: center;
@@ -447,19 +481,27 @@
   .text-red-500 {
     color: var(--color-red-500);
   }
-  .text-text-secondary {
-    color: var(--color-text-secondary);
-  }
   .text-white {
     color: var(--color-white);
   }
   .underline {
     text-decoration-line: underline;
   }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
   .hover\:bg-blue-500 {
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-blue-500);
+      }
+    }
+  }
+  .hover\:bg-main-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-main-700);
       }
     }
   }
@@ -525,15 +567,15 @@
       background-color: var(--color-mist-100);
     }
   }
-  .data-active\:text-bg-secondary {
+  .data-active\:text-main-900 {
     &:where([data-state="active"]), &:where([data-active]:not([data-active="false"])) {
-      color: var(--color-bg-secondary);
+      color: var(--color-main-900);
     }
   }
 }
 @layer base {
   * {
-    color: var(--color-white);
+    color: var(--color-mist-50);
   }
 }
 @property --tw-rotate-x {
@@ -575,6 +617,11 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -587,6 +634,7 @@
       --tw-space-x-reverse: 0;
       --tw-border-style: solid;
       --tw-font-weight: initial;
+      --tw-outline-style: solid;
     }
   }
 }

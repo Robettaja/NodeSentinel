@@ -6,9 +6,9 @@
 
             <div class="flex flex-col space-y-3 w-4xs md:w-full p-2" >
                 <label class="font-medium text-lg ">Username</label>
-                <input type="text" name="username"  required class="rounded-lg p-3 w-full border-none bg-dark-800"/>
+                <input type="text" name="username"  required class="rounded-lg p-3 w-full border-none bg-main-800"/>
                 <label class="font-medium text-lg ">Password</label>
-                <input type="password" name="password"  required class="rounded-lg p-3 w-full border-none  bg-dark-800"/>
+                <input type="password" name="password"  required class="rounded-lg p-3 w-full border-none  bg-main-800"/>
 
                 @if(TempData["errors"]!= null) {
                     <p class="text-red-500">@TempData["errors"]</p>
