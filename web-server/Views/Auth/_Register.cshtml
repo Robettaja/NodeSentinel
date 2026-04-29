@@ -1,0 +1,29 @@
+@model AuthViewModel
+
+
+<h2 class="font-bold text-xl text-center " >Create account</h2>
+<form asp-controller="Auth" asp-action="Register" method="post" class="w-full lg:max-w-1/2">
+
+    <div class="flex flex-col space-y-1 w-4xs p-2" >
+        <label asp-for="Username" class="font-medium text-lg "></label>
+        <input asp-for="Username"  class="rounded-lg p-3 w-full  border-hidden bg-bg-1">
+        <span asp-validation-for="Username" class="text-red-500"></span><br>
+        @if(TempData["errors"]!= null) {
+            <p class="text-red-500">@TempData["errors"]</p>
+
+        }
+        <label asp-for="Password" class="font-medium text-lg "></label>
+        <input asp-for="Password"  class="rounded-lg p-3 w-full  border-hidden bg-bg-1">
+        <span asp-validation-for="Password" class="text-red-500"></span><br>
+
+        <label asp-for="RepeatPassword" class="font-medium text-lg "></label>
+        <input asp-for="RepeatPassword"  class="rounded-lg p-3 w-full  border-hidden bg-bg-1">
+        <span asp-validation-for="RepeatPassword" class="text-red-500"></span><br>
+        <button type="submit" class=" rounded-xl bg-brand hover:bg-blue-500 mt-4 p-2 p-1 text-lg cursor-pointer w-[170px]">Sign up</button>
+
+        <div class="flex space-x-3 mt-2">
+            <p class="text-gray-400 font-light">Already have an account?</p>
+            <a asp-action="account" asp-controller="Auth" class="text-blue-700 hover:text-blue-600 underline">Login here</a> 
+        </div>
+    </div>
+</form>

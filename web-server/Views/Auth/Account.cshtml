@@ -1,0 +1,46 @@
+@model AuthViewModel
+<div class="flex items-center justify-center flex-1">
+    <div class="flex flex-col items-center bg-bg-secondary border border-bg-1 rounded-lg w-full max-w-4xl space-y-2 h-[520px] m-4">
+        <div class="flex w-full">
+            <button data-active id="btn-login" onclick="loadPartial('login')"
+                class="cursor-pointer w-1/2 p-2 rounded-l-xl
+                       bg-dark-850 
+                       data-active:bg-mist-100 data-active:text-bg-secondary">
+                Login
+            </button>
+            <button id="btn-register" onclick="loadPartial('register')"
+                class="cursor-pointer w-1/2 p-2 rounded-r-xl
+                       bg-dark-850 
+                       data-active:bg-mist-100 data-active:text-bg-secondary">
+                Sign Up
+            </button>
+        </div>
+        <div id="partial-container" class="w-full flex flex-col items-center space-y-6 m-4">
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadPartial(name) {
+    const res = await fetch(name === 'login' ? '/login' : '/Register');
+    const html = await res.text();
+    document.getElementById('partial-container').innerHTML = html;
+
+    document.getElementById('btn-login').removeAttribute('data-active');
+    document.getElementById('btn-register').removeAttribute('data-active');
+    document.getElementById(name === 'login' ? 'btn-login' : 'btn-register').setAttribute('data-active', '');
+}
+
+const params = new URLSearchParams(window.location.search);
+const tab = params.get('tab');
+loadPartial(tab === 'register' ? 'register' : 'login');
+document.addEventListener('click', function(event) {
+    const navMenu = document.getElementById('navigation')
+    const menuBtn = document.getElementById('menu')
+    
+    if (!navMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+        navMenu.removeAttribute('data-active')
+        menuBtn.removeAttribute('data-active')
+    }
+})
+</script>
