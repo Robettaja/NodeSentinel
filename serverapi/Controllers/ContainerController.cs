@@ -41,7 +41,9 @@ namespace serverapi.Controllers
             await ContainerHandler.Stop(serverName, new CancellationToken());
             return Ok();
         }
+
         [HttpPost("{serverName}/command")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
         public async Task<IActionResult> Command(string serverName, [FromBody] string command, [FromQuery] ServerType type)
         {
             string data = await ContainerHandler.Command(serverName, command, type, new CancellationToken());
@@ -49,6 +51,7 @@ namespace serverapi.Controllers
         }
 
         [HttpGet("{serverName}/logs")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
         public async Task<IActionResult> Logs(string serverName)
         {
             string logs = await ContainerHandler.Logs(serverName, new CancellationToken());
@@ -62,22 +65,19 @@ namespace serverapi.Controllers
         }
 
         [HttpGet("{serverName}/status")]
-        public async Task<IActionResult> Status(string serverName)
+        public async Task<ActionResult<string>> Status(string serverName)
         {
             string status = await ContainerHandler.Status(serverName, new CancellationToken());
             return Ok(status);
         }
         [HttpGet("{serverName}/stats")]
-        public async Task<IActionResult> Stats(string serverName)
+        public async Task<ActionResult<string>> Stats(string serverName)
         {
             SystemData status = await ContainerHandler.Stats(serverName, new CancellationToken());
             return Ok(status);
         }
         [HttpGet("availableport")]
-        public async Task<IActionResult> AvaiablePort(int startPort)
-        {
-            return Ok(PortFinder.GetNextAvailablePort(startPort));
-        }
+
         [HttpPost("{serverName}/edit")]
         public async Task<IActionResult> Edit(string serverName, ContainerData data)
         {

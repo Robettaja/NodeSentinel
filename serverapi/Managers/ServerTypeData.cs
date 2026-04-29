@@ -11,20 +11,23 @@ namespace serverapi.Managers
         public string DefaultPort { get; init; }
         public string DefaultImage { get; init; }
         public string DataLocation { get; init; }
+        public string PortEnv { get; init; }
 
-        public ServerTypeData(string commandSender, string defaultPort, string defaultImage, string dataLocation)
+        public ServerTypeData(string commandSender, string defaultPort, string defaultImage, string dataLocation, string portEnv)
         {
             CommandSender = commandSender;
             DefaultPort = defaultPort;
             DefaultImage = defaultImage;
             DataLocation = dataLocation;
+            PortEnv = portEnv;
         }
         public static IReadOnlyDictionary<ServerType, ServerTypeData> SPECIFICS = new Dictionary<ServerType, ServerTypeData>()
         {
-            {ServerType.TERRARIA,new("inject","7777","passivelemon/terraria-docker:terraria-latest","/opt/terraria/config")},
-            {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest","/data")},
-            {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest","/data")},
-            {ServerType.VALHEIM,new("supervisorctl","2456","ghcr.io/community-valheim-tools/valheim-server","/config")},
+            {ServerType.TERRARIA,new("inject","7777","passivelemon/terraria-docker:terraria-latest","/opt/terraria/config","PORT")},
+            {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest","/data","TMOD_PORT")},
+            {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest","/data","SERVER_PORT")},
+            //TODO fix
+            {ServerType.VALHEIM,new("supervisorctl","2456","ghcr.io/community-valheim-tools/valheim-server","/config","")},
 
         };
 

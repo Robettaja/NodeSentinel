@@ -11,7 +11,7 @@
     <header class="lg:sticky lg:top-0 lg:min-h-screen lg:w-fit w-0 bg-main-950">
         <nav id="navigation" class="hidden data-active:flex lg:flex fixed lg:sticky top-0 left-0  w-64 lg:w-fit h-screen flex-col space-y-1 border rounded-xl border-main-800 z-50">
 
-            <div class="flex flex-col justify-between h-full">
+            <div class="flex flex-col justify-between h-full bg-main-950">
 
                 <div class="w-fit">
 
@@ -61,7 +61,7 @@
                         }
 
                 </div>
-                <div class="bg-main-900 m-2 rounded-xl border border-main-800 flex space-x-5 p-3 h-[100px] justify-center items-center">
+                <div class="bg-main-900 m-2 rounded-xl w-fit border border-main-800 flex space-x-5 p-3 h-[100px] justify-center items-center">
                         @if(User.Identity!.IsAuthenticated) {
                             <div class="flex flex-col h-full justify-between items-center">
                                 <p>@User.Identity.Name</p>

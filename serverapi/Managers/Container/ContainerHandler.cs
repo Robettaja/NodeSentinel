@@ -15,9 +15,21 @@ namespace serverapi.Managers.Container
         }
         public virtual async Task<bool> Create(ContainerData containerData, CancellationToken ct)
         {
-
             ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
             if (container != null) return false;
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+
+            var usedPorts = containers
+                .SelectMany(c => c.Ports)
+                .Select(p => (int)p.PublicPort)
+                .Where(p => p > 0)
+                .ToList();
+
+            string defaultPort = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultPort;
+
+            var port = PortFinder.GetNextAvailablePort(int.Parse(defaultPort), usedPorts);
+            containerData.Env.Add($"{ServerTypeData.SPECIFICS[containerData.ServerType].PortEnv}=\"{port}\"");
+            Console.WriteLine($"{ServerTypeData.SPECIFICS[containerData.ServerType].PortEnv}={port}");
 
             string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
             await PullImage(image, ct);
@@ -30,7 +42,7 @@ namespace serverapi.Managers.Container
             {
                 {
                     $"{serverSpec.DefaultPort}/tcp",
-                    new List<PortBinding> { new() { HostPort = containerData.Port } }
+                    new List<PortBinding> { new() { HostPort = port.ToString() } }
                 }
             },
                 Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"]
@@ -51,52 +63,6 @@ namespace serverapi.Managers.Container
             return true;
         }
 
-        public static async Task<bool> Create2(ContainerData containerData, CancellationToken ct)
-        {
-            ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
-            if (container != null) return false;
-
-            string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
-            await PullImage(image, ct);
-
-            var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
-            var portBindings = new Dictionary<string, IList<PortBinding>>();
-
-            if (containerData.ServerType == ServerType.VALHEIM)
-            {
-                int basePort = int.Parse(containerData.Port);
-                portBindings[$"{basePort}/udp"] = new List<PortBinding> { new() { HostPort = basePort.ToString() } };
-                portBindings[$"{basePort + 1}/udp"] = new List<PortBinding> { new() { HostPort = (basePort + 1).ToString() } };
-                portBindings[$"{basePort + 2}/udp"] = new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } };
-            }
-            else
-            {
-                portBindings[$"{serverSpec.DefaultPort}/tcp"] = new List<PortBinding> { new() { HostPort = containerData.Port } };
-            }
-
-            HostConfig hostConfig = new()
-            {
-                PortBindings = portBindings,
-                Binds = [$"{AppContext.BaseDirectory + "servers/" + containerData.ServerName}:{serverSpec.DataLocation}"],
-                CapAdd = containerData.ServerType == ServerType.VALHEIM
-                    ? new List<string> { "sys_nice" }
-                    : null
-            };
-
-            CreateContainerParameters parameters = new()
-            {
-                Name = containerData.ServerName,
-                Tty = containerData.Tty,
-                Image = image,
-                AttachStdin = containerData.AttachStdin,
-                HostConfig = hostConfig,
-                Env = containerData.Env,
-            };
-
-            var response = await client.Containers.CreateContainerAsync(parameters, ct);
-            await client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters(), ct);
-            return true;
-        }
         protected static async Task PullImage(string image, CancellationToken ct)
         {
             try

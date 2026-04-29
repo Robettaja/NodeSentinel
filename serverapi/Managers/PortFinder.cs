@@ -6,11 +6,13 @@ namespace serverapi.Managers
 {
     public static class PortFinder
     {
-        public static int GetNextAvailablePort(int startingPort, int maxPort = 65535)
+        public static int GetNextAvailablePort(int startingPort, IEnumerable<int> excludedPorts, int maxPort = 65535)
         {
+            var excluded = new HashSet<int>(excludedPorts);
+
             for (int port = startingPort; port <= maxPort; port++)
             {
-                if (IsPortAvailable(port))
+                if (!excluded.Contains(port) && IsPortAvailable(port))
                     return port;
             }
 

@@ -14,7 +14,8 @@ namespace serverapi.Managers.Container
             await PullImage(image, ct);
 
             var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
-            int basePort = int.Parse(containerData.Port);
+            // TODO FIX
+            int basePort = int.Parse("2");
 
             HostConfig hostConfig = new()
             {

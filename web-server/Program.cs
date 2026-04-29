@@ -18,9 +18,10 @@ builder.Services.AddSingleton(sp =>
     var adapter = new HttpClientRequestAdapter(
         authProvider,
         httpClient: httpClient
-    );
-
-    adapter.BaseUrl = "http://localhost:5106";
+    )
+    {
+        BaseUrl = "http://localhost:5106"
+    };
 
     return new PostsClient(adapter);
 });

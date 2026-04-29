@@ -1,502 +1,686 @@
 {
-  "openapi": "3.1.1",
-  "info": {
-    "title": "serverapi | v1",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:5106/"
-    }
-  ],
-  "paths": {
-    "/backup/{serverName}/create": {
-      "post": {
-        "tags": ["Backup"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+    "openapi": "3.1.1",
+    "info": {
+        "title": "serverapi | v1",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:5106/"
+        }
+    ],
+    "paths": {
+        "/backup/{serverName}/create": {
+            "post": {
+                "tags": [
+                    "Backup"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBackupRequest"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBackupRequest"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBackupRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateBackupRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateBackupRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateBackupRequest"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/backup/{serverName}/list": {
-      "get": {
-        "tags": ["Backup"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "/backup/{serverName}/list": {
+            "get": {
+                "tags": [
+                    "Backup"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ServerType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BackupItem"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BackupItem"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BackupItem"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ServerType"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/backup/{serverName}/restore": {
-      "post": {
-        "tags": ["Backup"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ServerType"
-            }
-          },
-          {
-            "name": "backupName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/backup/{serverName}/delete": {
-      "delete": {
-        "tags": ["Backup"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ServerType"
-            }
-          },
-          {
-            "name": "backupName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/create": {
-      "post": {
-        "tags": ["Container"],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/start": {
-      "post": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "/backup/{serverName}/restore": {
+            "post": {
+                "tags": [
+                    "Backup"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ServerType"
+                        }
+                    },
+                    {
+                        "name": "backupName",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/restart": {
-      "post": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/stop": {
-      "post": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/command": {
-      "post": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ServerType"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/logs": {
-      "get": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "/backup/{serverName}/delete": {
+            "delete": {
+                "tags": [
+                    "Backup"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ServerType"
+                        }
+                    },
+                    {
+                        "name": "backupName",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/logs/stream": {
-      "get": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/status": {
-      "get": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/stats": {
-      "get": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/availableport": {
-      "get": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "startPort",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/edit": {
-      "post": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContainerData"
-              }
-            }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/container/{serverName}/delete": {
-      "delete": {
-        "tags": ["Container"],
-        "parameters": [
-          {
-            "name": "serverName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "/container/create": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ContainerData": {
-        "type": "object",
-        "properties": {
-          "serverName": {
-            "type": "string"
-          },
-          "tty": {
-            "type": "boolean"
-          },
-          "attachStdin": {
-            "type": "boolean"
-          },
-          "serverType": {
-            "$ref": "#/components/schemas/ServerType"
-          },
-          "port": {
-            "type": ["null", "string"]
-          },
-          "env": {
-            "type": "array",
-            "items": {
-              "type": "string"
+        },
+        "/container/{serverName}/start": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
-          }
+        },
+        "/container/{serverName}/restart": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/stop": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/command": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ServerType"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/logs": {
+            "get": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/logs/stream": {
+            "get": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/status": {
+            "get": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/stats": {
+            "get": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/container/availableport": {
+            "get": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "startPort",
+                        "in": "query",
+                        "schema": {
+                            "pattern": "^-?(?:0|[1-9]\\d*)$",
+                            "type": [
+                                "integer",
+                                "string"
+                            ],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "pattern": "^-?(?:0|[1-9]\\d*)$",
+                                    "type": [
+                                        "integer",
+                                        "string"
+                                    ],
+                                    "format": "int32"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "pattern": "^-?(?:0|[1-9]\\d*)$",
+                                    "type": [
+                                        "integer",
+                                        "string"
+                                    ],
+                                    "format": "int32"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "pattern": "^-?(?:0|[1-9]\\d*)$",
+                                    "type": [
+                                        "integer",
+                                        "string"
+                                    ],
+                                    "format": "int32"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/edit": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContainerData"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/container/{serverName}/delete": {
+            "delete": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
-      },
-      "CreateBackupRequest": {
-        "type": "object",
-        "properties": {
-          "backupName": {
-            "type": "string"
-          },
-          "saveSlot": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/ServerType"
-          }
-        }
-      },
-      "ServerType": {
-        "type": "integer"
-      }
-    }
-  },
-  "tags": [
-    {
-      "name": "Backup"
     },
-    {
-      "name": "Container"
-    }
-  ]
+    "components": {
+        "schemas": {
+            "BackupItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                            "integer",
+                            "string"
+                        ],
+                        "format": "int32"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ContainerData": {
+                "type": "object",
+                "properties": {
+                    "serverName": {
+                        "type": "string"
+                    },
+                    "tty": {
+                        "type": "boolean"
+                    },
+                    "attachStdin": {
+                        "type": "boolean"
+                    },
+                    "serverType": {
+                        "$ref": "#/components/schemas/ServerType"
+                    },
+                    "port": {
+                        "type": [
+                            "null",
+                            "string"
+                        ]
+                    },
+                    "env": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "CreateBackupRequest": {
+                "type": "object",
+                "properties": {
+                    "backupName": {
+                        "type": "string"
+                    },
+                    "saveSlot": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/ServerType"
+                    }
+                }
+            },
+            "ServerType": {
+                "type": "integer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Backup"
+        },
+        {
+            "name": "Container"
+        }
+    ]
 }
