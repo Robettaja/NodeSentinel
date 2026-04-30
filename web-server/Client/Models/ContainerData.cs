@@ -24,14 +24,6 @@ namespace KiotaPosts.Client.Models
 #else
         public List<string> Env { get; set; }
 #endif
-        /// <summary>The port property</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
-        public string? Port { get; set; }
-#nullable restore
-#else
-        public string Port { get; set; }
-#endif
         /// <summary>The serverName property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
@@ -71,7 +63,6 @@ namespace KiotaPosts.Client.Models
             {
                 { "attachStdin", n => { AttachStdin = n.GetBoolValue(); } },
                 { "env", n => { Env = n.GetCollectionOfPrimitiveValues<string>()?.AsList(); } },
-                { "port", n => { Port = n.GetStringValue(); } },
                 { "serverName", n => { ServerName = n.GetStringValue(); } },
                 { "serverType", n => { ServerType = n.GetIntValue(); } },
                 { "tty", n => { Tty = n.GetBoolValue(); } },
@@ -86,7 +77,6 @@ namespace KiotaPosts.Client.Models
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
             writer.WriteBoolValue("attachStdin", AttachStdin);
             writer.WriteCollectionOfPrimitiveValues<string>("env", Env);
-            writer.WriteStringValue("port", Port);
             writer.WriteStringValue("serverName", ServerName);
             writer.WriteIntValue("serverType", ServerType);
             writer.WriteBoolValue("tty", Tty);

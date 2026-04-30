@@ -1,4 +1,139 @@
-﻿@{
+﻿@model DashboardViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
+
+@if (User.Identity!.IsAuthenticated)
+{
+    <div class="flex items-center flex-col gap-3">
+        <partial name="_ServerInfo" model="@Model"/>
+        <div class="flex w-4xl  gap-6 flex-col md:flex-row">
+            <div class="flex w-full max-w-xl bg-main-900 rounded-xl p-2 border border-main-800">
+                    <canvas class="" id="cpuChart"></canvas>
+            </div>
+            <div class="flex w-full max-w-xl bg-main-900 rounded-xl p-2 border border-main-800">
+                <canvas class="" id="ramChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    @section scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('cpuChart');
+            const ctx2 = document.getElementById('ramChart');
+
+            const cpuChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['60', '55', '50', '45', '40', '35',"30","25","20","15","10","5","0"],
+                    datasets: [{
+                        label: 'Cpu usage',
+                        data: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        fill: true,  
+                        borderWidth: 2,
+                        tension: 0.4,   
+                        backgroundColor: 'oklch(28.3% 0.141 291.089 / 0.6)',
+                        borderColor: "oklch(54.1% 0.281 293.009)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                            
+                        },
+                        y: {
+                            ticks: {
+                                callback: (value) => {
+                                    return `${Number(value)}%`;
+                                }
+                            },
+                            
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                        
+                    }
+                }
+            });
+
+            const ramChart= new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['60', '55', '50', '45', '40', '35',"30","25","20","15","10","5","0"],
+                    datasets: [{
+                        label: 'Memory usage',
+                        data: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        fill: true,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        backgroundColor: 'oklch(39.3% 0.095 152.535 / 0.6)',
+                        borderColor: "oklch(72.3% 0.219 149.579)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+
+                        },
+                        y: {
+                            ticks: {
+                                callback: (value) => {
+                                    return `${Number(value)}MB`;
+                                }
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+
+                    }
+                }
+            });
+            updateChart()
+            async function updateChart() {
+                const systemData = await fetch("/Home/Stats?serverName=@Model.ActiveServer.ServerName").then(res => res.json());
+                if(systemData){
+                    cpuChart.data.datasets[0].data.shift()
+                    cpuChart.data.datasets[0].data.push(systemData.cpuPercent)
+                    ramChart.data.datasets[0].data.shift()
+                    ramChart.data.datasets[0].data.push(systemData.memoryMb)
+                    cpuChart.update("active");
+                    ramChart.update("active");
+                    
+                }
+                setTimeout(updateChart, 3000);
+
+                
+                
+            }
+        </script>
+
+    }
+
+
+}
+
 

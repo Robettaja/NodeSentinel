@@ -33,6 +33,7 @@ namespace serverapi.Controllers
         public async Task<IActionResult> Restart(string serverName)
         {
             await ContainerHandler.Restart(serverName, new CancellationToken());
+            Console.WriteLine(serverName);
             return Ok();
         }
         [HttpPost("{serverName}/stop")]
@@ -65,16 +66,26 @@ namespace serverapi.Controllers
         }
 
         [HttpGet("{serverName}/status")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<string>> Status(string serverName)
         {
             string status = await ContainerHandler.Status(serverName, new CancellationToken());
             return Ok(status);
         }
         [HttpGet("{serverName}/stats")]
+        [ProducesResponseType<SystemData>(StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<string>> Stats(string serverName)
         {
-            SystemData status = await ContainerHandler.Stats(serverName, new CancellationToken());
-            return Ok(status);
+            try
+            {
+                SystemData status = await ContainerHandler.Stats(serverName, new CancellationToken());
+                return Ok(status);
+            }
+            catch
+            {
+
+            }
+            return Ok(null);
         }
         [HttpGet("availableport")]
 

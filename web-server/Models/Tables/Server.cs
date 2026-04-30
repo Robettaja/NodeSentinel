@@ -8,6 +8,7 @@ namespace web_server.Models.Tables
         public string? ServerName { get; set; }
         public GameSeverType ServerType { get; set; }
         public Dictionary<string, string> Env { get; set; } = [];
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public ObjectId UserID { get; set; }
     }
     public enum GameSeverType

@@ -9,39 +9,31 @@ namespace KiotaPosts.Client.Models
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class BackupItem : IAdditionalDataHolder, IParsable
+    public partial class SystemData : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The createdAt property</summary>
-        public DateTimeOffset? CreatedAt { get; set; }
-        /// <summary>The name property</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
-        public string? Name { get; set; }
-#nullable restore
-#else
-        public string Name { get; set; }
-#endif
-        /// <summary>The size property</summary>
-        public int? Size { get; set; }
+        /// <summary>The cpuPercent property</summary>
+        public float? CpuPercent { get; set; }
+        /// <summary>The memoryMb property</summary>
+        public float? MemoryMb { get; set; }
         /// <summary>
-        /// Instantiates a new <see cref="global::KiotaPosts.Client.Models.BackupItem"/> and sets the default values.
+        /// Instantiates a new <see cref="global::KiotaPosts.Client.Models.SystemData"/> and sets the default values.
         /// </summary>
-        public BackupItem()
+        public SystemData()
         {
             AdditionalData = new Dictionary<string, object>();
         }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
-        /// <returns>A <see cref="global::KiotaPosts.Client.Models.BackupItem"/></returns>
+        /// <returns>A <see cref="global::KiotaPosts.Client.Models.SystemData"/></returns>
         /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
-        public static global::KiotaPosts.Client.Models.BackupItem CreateFromDiscriminatorValue(IParseNode parseNode)
+        public static global::KiotaPosts.Client.Models.SystemData CreateFromDiscriminatorValue(IParseNode parseNode)
         {
             if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-            return new global::KiotaPosts.Client.Models.BackupItem();
+            return new global::KiotaPosts.Client.Models.SystemData();
         }
         /// <summary>
         /// The deserialization information for the current model
@@ -51,9 +43,8 @@ namespace KiotaPosts.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "createdAt", n => { CreatedAt = n.GetDateTimeOffsetValue(); } },
-                { "name", n => { Name = n.GetStringValue(); } },
-                { "size", n => { Size = n.GetIntValue(); } },
+                { "cpuPercent", n => { CpuPercent = n.GetFloatValue(); } },
+                { "memoryMb", n => { MemoryMb = n.GetFloatValue(); } },
             };
         }
         /// <summary>
@@ -63,9 +54,8 @@ namespace KiotaPosts.Client.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteDateTimeOffsetValue("createdAt", CreatedAt);
-            writer.WriteStringValue("name", Name);
-            writer.WriteIntValue("size", Size);
+            writer.WriteFloatValue("cpuPercent", CpuPercent);
+            writer.WriteFloatValue("memoryMb", MemoryMb);
             writer.WriteAdditionalData(AdditionalData);
         }
     }
