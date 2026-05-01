@@ -19,6 +19,21 @@ namespace web_server.Models
             var items = Servers?.Select(s => new { Id = s.Id.ToString(), s.ServerName }) ?? [];
             return new SelectList(items, "Id", "ServerName", ActiveServer?.Id.ToString());
         }
+
+        public string GetServerImagePath()
+        {
+            GameSeverType type = ActiveServer.ServerType;
+            return type switch
+            {
+                GameSeverType.Terraria =>"/Images/terraria.jpg",
+                GameSeverType.Tmodloader =>"/Images/tmodloader.png",
+                GameSeverType.Minecraft =>"/Images/minecraft.svg",
+                GameSeverType.Valheim =>"Images/valheim.png",
+                _ => ""
+
+            };
+
+        }
         public async Task<string> GetStatus(Server server)
         {
             if (server?.ServerName is null) return "unknown";

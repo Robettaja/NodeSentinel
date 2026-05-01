@@ -2,7 +2,7 @@
     <div class="bg-main-900 w-full max-w-4xl flex p-2 rounded-xl border border-main-800">
         <div class="flex justify-between w-full flex-col sm:flex-row space-y-1">
             <div class="flex">
-                <img class="size-30 object-contain" src="/Images/terraria.jpg">
+                <img class="size-30 object-contain" src="@Model.GetServerImagePath()">
                 <div class="space-x-1 space-y-3">
                     <select class=" bg-main-700 p-2 rounded-xl h-fit font-bold " name="serverId"
                             asp-items="@Model.GetServerSelectList()"

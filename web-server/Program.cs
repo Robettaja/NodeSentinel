@@ -2,6 +2,7 @@ using KiotaPosts.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
+using web_server.Hubs;
 using web_server.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,5 +63,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
+app.MapHub<LogsHub>("/logsHub");
 app.Run();

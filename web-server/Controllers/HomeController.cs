@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using KiotaPosts.Client;
 using Microsoft.AspNetCore.Antiforgery;
+using KiotaPosts.Client.Container.Item.Delete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -54,7 +55,6 @@ public class HomeController(PostsClient client) : Controller
     [Authorize]
     public async Task<IActionResult> Stop(string? serverName)
     {
-        Console.WriteLine(serverName);
         await _client.Container[serverName].Stop.PostAsync();
         return RedirectToAction("Index", "Home");
     }
@@ -77,14 +77,21 @@ public class HomeController(PostsClient client) : Controller
 
     }
 
-    public IActionResult Privacy()
+    [Authorize]
+    public async Task<IActionResult> Command(string? serverName, string? command)
     {
-        return View();
+        string response = await _client.Container[serverName].Command.PostAsync(command);
+        return Content(response,"text/plain");
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Delete(string? serverName)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        await DatabaseManipulator.DeleteOne<Server>(s => s.ServerName.Equals(serverName));
+        await _client.Container[serverName].DeletePath.DeleteAsync();
+        return Ok();
+
     }
+
 }
