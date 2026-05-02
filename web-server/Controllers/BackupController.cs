@@ -41,7 +41,7 @@ public class BackupController : Controller
     [Authorize]
     [Route("Backup/create")]
     [HttpPost]
-    public async Task<IActionResult> Backup(string? serverName, string? backupName)
+    public async Task<IActionResult> CreateBackup(string? serverName, string? backupName)
     {
         Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
         string key = server.ServerType switch
