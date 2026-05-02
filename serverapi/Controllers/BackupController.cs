@@ -20,8 +20,8 @@ public class BackupController : Controller
     [ProducesResponseType<List<BackupItem>>(StatusCodes.Status200OK, "application/json")]
     public async Task<ActionResult<List<BackupItem>>> List(string serverName, [FromQuery] ServerType type)
     {
-        List<BackupItem> item = await IBackupManager.GetBackupManager()[type].List(serverName);
-        return Ok(item);
+        List<BackupItem> items = await IBackupManager.GetBackupManager()[type].List(serverName);
+        return Ok(items);
 
     }
     [HttpPost("{serverName}/restore")]

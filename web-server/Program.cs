@@ -8,15 +8,14 @@ using web_server.Managers;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton(sp =>
 {
-    var httpClient = sp.GetRequiredService<HttpClient>();
-
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    var httpClient = factory.CreateClient();
     var authProvider = new AnonymousAuthenticationProvider();
-
     var adapter = new HttpClientRequestAdapter(
         authProvider,
         httpClient: httpClient
@@ -24,10 +23,8 @@ builder.Services.AddSingleton(sp =>
     {
         BaseUrl = "http://localhost:5106"
     };
-
     return new PostsClient(adapter);
 });
-
 
 DatabaseManipulator.Initialize(builder.Configuration);
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>

@@ -33,7 +33,6 @@ namespace serverapi.Controllers
         public async Task<IActionResult> Restart(string serverName)
         {
             await ContainerHandler.Restart(serverName, new CancellationToken());
-            Console.WriteLine(serverName);
             return Ok();
         }
         [HttpPost("{serverName}/stop")]

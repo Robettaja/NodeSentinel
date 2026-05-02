@@ -29,7 +29,6 @@ namespace serverapi.Managers.Container
 
             var port = PortFinder.GetNextAvailablePort(int.Parse(defaultPort), usedPorts);
             containerData.Env.Add($"{ServerTypeData.SPECIFICS[containerData.ServerType].PortEnv}=\"{port}\"");
-            Console.WriteLine($"{ServerTypeData.SPECIFICS[containerData.ServerType].PortEnv}={port}");
 
             string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
             await PullImage(image, ct);

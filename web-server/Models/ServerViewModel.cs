@@ -1,16 +1,18 @@
 using KiotaPosts.Client;
+using KiotaPosts.Client.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using web_server.Models.Tables;
 
 namespace web_server.Models
 {
-    public class DashboardViewModel
+    public class ServerViewModel
     {
         private PostsClient client;
         public List<Server>? Servers { get; set; }
         public Server ActiveServer { get; set; }
         public string ActiveServerStatus { get; set; }
-        public DashboardViewModel(PostsClient client)
+        public List<BackupItem>? Backups { get; set; } = [];
+        public ServerViewModel(PostsClient client)
         {
             this.client = client;
         }
@@ -20,8 +22,18 @@ namespace web_server.Models
             return new SelectList(items, "Id", "ServerName", ActiveServer?.Id.ToString());
         }
 
+        public async Task GetBackups()
+        {
+            Backups = await client.Backup[ActiveServer.ServerName].List.GetAsync(config =>
+            {
+                config.QueryParameters.Type = (int)ActiveServer.ServerType;
+            }) ?? [];
+            Console.WriteLine(Backups.Count());
+        }
+
         public string GetServerImagePath()
         {
+            if (ActiveServer is null) return "";
             GameSeverType type = ActiveServer.ServerType;
             return type switch
             {
@@ -65,4 +77,5 @@ namespace web_server.Models
         }
 
     }
+    
 }

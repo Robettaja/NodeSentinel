@@ -26,7 +26,7 @@ public class HomeController(PostsClient client) : Controller
             Server? selected = serverId != null
                 ? await DatabaseManipulator.GetSingle<Server>(s => s.Id == ObjectId.Parse(serverId))
                 : servers?.FirstOrDefault();
-            DashboardViewModel vm = new(_client)
+            ServerViewModel vm = new(_client)
             {
                 Servers = servers,
                 ActiveServer = selected,
@@ -34,7 +34,7 @@ public class HomeController(PostsClient client) : Controller
             vm.ActiveServerStatus = await vm.GetStatus(selected);
             return View(vm);
         }
-        return View(new DashboardViewModel(_client));
+        return View(new ServerViewModel(_client));
     }
     [HttpPost]
     [Authorize]
@@ -90,7 +90,7 @@ public class HomeController(PostsClient client) : Controller
     {
         await DatabaseManipulator.DeleteOne<Server>(s => s.ServerName.Equals(serverName));
         await _client.Container[serverName].DeletePath.DeleteAsync();
-        return Ok();
+        return RedirectToAction("Index", "Home");
 
     }
 

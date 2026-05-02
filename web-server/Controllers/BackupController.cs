@@ -1,0 +1,72 @@
+using System.Diagnostics;
+using KiotaPosts.Client;
+using KiotaPosts.Client.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using web_server.Managers;
+using web_server.Models;
+using web_server.Models.Tables;
+
+namespace web_server.Controllers;
+
+public class BackupController : Controller
+{
+    PostsClient _client;
+    public BackupController(PostsClient client)
+    {
+        _client = client;
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Index(string? serverId)
+    {
+        User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+        var servers = await DatabaseManipulator.GetMany<Server>(s => s.UserID.Equals(user.Id));
+        Server? selected = serverId != null
+            ? await DatabaseManipulator.GetSingle<Server>(s => s.Id == ObjectId.Parse(serverId))
+            : servers?.FirstOrDefault();
+        ServerViewModel vm = new(_client)
+        {
+            Servers = servers,
+            ActiveServer = selected,
+        };
+        await vm.GetBackups();
+        vm.ActiveServerStatus = await vm.GetStatus(selected);
+        return View(vm);
+
+    }
+
+    [Authorize]
+    [Route("Backup/create")]
+    [HttpPost]
+    public async Task<IActionResult> Backup(string? serverName, string? backupName)
+    {
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
+        string key = server.ServerType switch
+        {
+            GameSeverType.Terraria => "WORLDNAME",
+            GameSeverType.Tmodloader => "WORLDNAME",
+            GameSeverType.Minecraft => "TBD",
+            GameSeverType.Valheim => "TBD",
+
+        };
+        try
+        {
+            var request = new KiotaPosts.Client.Models.CreateBackupRequest
+            {
+                BackupName = backupName,
+                SaveSlot = server.Env[key],
+                Type = (int)GameSeverType.Terraria
+            };
+            var result = await _client.Backup[serverName].Create.PostAsync(request);
+        }
+        catch (Exception ex)
+        {
+        }
+        return RedirectToAction(nameof(Index));
+    }
+    
+    
+}
