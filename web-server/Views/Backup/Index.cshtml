@@ -21,8 +21,8 @@
                 <label class="my-2">Backup name</label>
                 <input name="backupName" class="bg-main-800 rounded-lg p-2" type="text"/>
                 <div class="flex items-center border-t border-default space-x-4 pt-4 md:pt-5">
-                    <button type="submit" class="bg-brand p-2 px-4 m-2 rounded-lg cursor-pointer">Create</button>
-                    <button type="button" class="bg-main-800 p-2 px-4 m-2 rounded-lg cursor-pointer" onclick="openCreateModal()">Close</button>
+                    <button type="submit" class="bg-brand hover:bg-blue-500 p-2 px-4 m-2 rounded-lg cursor-pointer">Create</button>
+                    <button type="button" class="bg-main-800 hover:bg-main-700 p-2 px-4 m-2 rounded-lg cursor-pointer" onclick="openCreateModal()">Close</button>
                 </div>
             </form>
             
@@ -91,7 +91,7 @@
             <div class="flex gap-2 items-center justify-between">
                 <div class="flex space-x-5">
                     <p class="font-semibold font-lg">@backup.Name.Split(".")[0]</p>
-                    <p class="">@backup.CreatedAt.Humanize()</p>
+                    <p class=" text-main-200 font-light">@backup.CreatedAt.Humanize()</p>
                 </div>
                 <div class="flex gap-2">
                     <form>
@@ -115,7 +115,7 @@
                     
                 </div>
             </div>
-            <p>Size @(backup.Size / 1000000)MB</p>
+            <p>Size @((backup.Size / 1000000.0))MB</p>
 
         </div>
         <div>
