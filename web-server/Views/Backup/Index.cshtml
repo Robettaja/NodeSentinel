@@ -4,12 +4,12 @@
 @if (@Model.ActiveServer != null)
 {
 <!-- Create Backupmodal -->
-<div id="backupCreateModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
+<div id="backupCreateModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
     <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
         <!-- Modal content -->
         <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
             <!-- Modal header -->
-            <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+            <div class="flex items-center justify-between pb-4 md:pb-5">
                 <h3 class="text-lg font-medium text-heading">
                     Create Backup 
                 </h3>
@@ -22,7 +22,7 @@
                 <input type="hidden" name="serverName" value="@Model.ActiveServer.ServerName"/>
                 <label class="my-2">Backup name</label>
                 <input name="backupName" class="bg-main-800 rounded-lg p-2" type="text"/>
-                <div class="flex items-center border-t border-default space-x-4 pt-4 md:pt-5">
+                <div class="flex items-center  space-x-4 pt-4 md:pt-5">
                     <button type="submit" class="bg-brand hover:bg-blue-500 p-2 px-4 m-2 rounded-lg cursor-pointer">Create</button>
                     <button type="button" class="bg-main-800 hover:bg-main-700 p-2 px-4 m-2 rounded-lg cursor-pointer" onclick="openCreateModal()">Close</button>
                 </div>
@@ -40,7 +40,7 @@
         <!-- Modal content -->
         <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
             <!-- Modal header -->
-            <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+            <div class="flex items-center justify-between  pb-4 md:pb-5">
                 <h3 class="text-lg font-medium text-heading">
                     Are you sure you want to delete backup 
                 </h3>
@@ -52,7 +52,7 @@
             <form class="flex flex-col gap-1" asp-controller="Backup" asp-action="DeleteBackup" method="post">
                 <input type="hidden" name="serverName" value="@Model.ActiveServer.ServerName"/>
                 <input type="hidden" id="deleteBackupName" name="backupName" value=""/>
-                <div class="flex items-center border-t border-default space-x-4 pt-4 md:pt-5">
+                <div class="flex items-center space-x-4 pt-4 md:pt-5">
                     <button type="submit" class="bg-red-600 hover:bg-red-500 p-2 px-4 m-2 rounded-lg cursor-pointer flex">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                             <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd"/>
@@ -70,12 +70,12 @@
 
 
 <!-- Restore modal-->
-<div id="backupRestoreModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
+<div id="backupRestoreModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0  justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
     <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
         <!-- Modal content -->
-        <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
+        <div class="relative bg-main-900 rounded-lg border  p-4 md:p-6">
             <!-- Modal header -->
-            <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
+            <div class="flex items-center justify-between">
                 <h3 class="text-lg font-medium text-heading">
                     Are you sure you want to restore this save? <br/> 
                     Current savefile will be gone.
@@ -89,7 +89,7 @@
             <form class="flex flex-col gap-1" asp-controller="Backup" asp-action="RestoreBackup" method="post">
                 <input type="hidden" name="serverName" value="@Model.ActiveServer.ServerName"/>
                 <input type="hidden" id="restoreBackupName" name="backupName" value=""/>
-                <div class="flex items-center border-t border-default space-x-4 pt-4 md:pt-5">
+                <div class="flex items-center  space-x-4 pt-4 md:pt-5">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-500 p-2 px-4 m-2 rounded-lg cursor-pointer flex">
                         
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -139,7 +139,7 @@
         </div>
     </div>
 </div>
-<div class="mx-auto  w-full max-w-4xl flex sm:flex-col justify-between m-2 mx-0 p-2 gap-2">
+<div class="mx-auto  w-full max-w-4xl flex flex-col sm:flex-row justify-between m-2 mx-0 p-2 gap-2">
     <div class="w-full p-2  bg-main-900 rounded-lg border border-main-800 flex items-center flex-col">
         <p class=" text-lg">Total backups</p>
         <p class="font-semibold text-xl">@Model.Backups.Count()</p>

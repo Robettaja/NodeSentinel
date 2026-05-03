@@ -1,6 +1,6 @@
 @model TmodServerViewModel 
 
-<dialog class="bg-main-900 w-full" id="modBrowser">
+<dialog class="bg-main-900 w-full mx-auto max-w-2xl" id="modBrowser">
     <div class="sticky top-0 bg-main-900 rounded p-2">
         <div class="flex items-center gap-2">
             <input class="bg-main-800 text-white rounded-lg p-2 px-4 flex-1 "
@@ -12,7 +12,7 @@
                    hx-target="#mod-list"
                    hx-swap="innerHTML"/>
             
-            <button  class="text-white" type="button" commandfor="modBrowser" command="close" class="cursor-pointer">
+            <button  class="text-white p-4 cursor-pointer" type="button" commandfor="modBrowser" command="close" class="cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
@@ -120,13 +120,4 @@
 </div>
 <script>
 
-    // function openModBrowser() {
-    //     const modal = document.getElementById("modBrowser")
-    //     modal.classList.toggle('hidden');
-    //     modal.classList.toggle('flex');
-    // }
-// window.addEventListener("beforeunload", function (e) {
-//     e.preventDefault();
-//     e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
-// });
 </script>

@@ -52,6 +52,7 @@ public class BackupController : Controller
             GameSeverType.Valheim => "TBD",
 
         };
+        Console.WriteLine(server.ServerType);
         try
         {
             Console.WriteLine(server.Env[key]);
@@ -59,7 +60,7 @@ public class BackupController : Controller
             {
                 BackupName = backupName,
                 SaveSlot = server.Env[key],
-                Type = (int)GameSeverType.Terraria
+                Type = (int)server.ServerType,
             };
             var result = await _client.Backup[serverName].Create.PostAsync(request);
         }

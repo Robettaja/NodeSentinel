@@ -18,14 +18,14 @@ public class TmodBackupManager : IBackupManager
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
             Image = "alpine",
-            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/tModLoader/Worlds/{save}.wld /source/tModLoader/Worlds/{save}.twld"],
+            Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar /source/Worlds/{save}.wld /source/Worlds/{save}.twld"],
             HostConfig = new HostConfig
             {
                 Binds =
-                    [
-                        $"{serverPath}:/source",
-                        $"{backupPath}:/backup"
-                    ],
+            [
+                $"{serverPath}/tModLoader/Worlds:/source/Worlds",
+                $"{backupPath}:/backup"
+            ],
                 AutoRemove = true
             }
         });

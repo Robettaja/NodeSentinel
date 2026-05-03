@@ -2,19 +2,30 @@
 
 @foreach (var mod in Model ?? [])
 {
-    <div class="bg-main-800 rounded-lg p-2 my-2 flex flex-col justify-between">
+    <div id="browser-mod-@mod.ModId"
+         class="bg-main-800 rounded-lg p-2 my-2 flex flex-col justify-between m-3"
+         data-modid="@mod.ModId"
+         data-devname="@mod.KvTags[0].Value"
+         data-dependencies="@mod.KvTags[1].Value"
+         data-image="@mod.PreviewUrl"
+         data-title="@mod.Title">
         <div class="flex justify-between items-center">
-            <div class="flex space-x-4 gap-4">
+            <div class="flex items-center space-x-4 gap-4">
                 <img class="size-20 mx-2" src="@mod.PreviewUrl"/>
                 <div class="m-x-2">
                     <p class="text-white font-bold text-lg">@mod.Title</p>
                     <p class="text-white">@(int.Parse(mod.ModSize) / 1000000)MB</p>
                     <p class="text-white">Views @mod.Views</p>
+                    <p class="text-yellow-50">Dependencies @mod.KvTags[1].Value</p>
                 </div>
-                
             </div>
-            <button class="text-white p-2 px-4 bg-main-900  hover:bg-main-700 cursor-pointer  h-fit rounded-lg" onclick="AddMod('@mod.PreviewUrl','@mod.Title','@mod.ModId')">Add</button>
-
+            <div class="flex items-center gap-2">
+                <span class="mod-badge hidden text-xs bg-green-700 text-white px-2 py-1 rounded-full">Added</span>
+                <button class="text-white p-2 px-4 bg-main-900 hover:bg-main-700 cursor-pointer h-fit rounded-lg"
+                        onclick="AddMod('@mod.PreviewUrl', '@mod.Title', '@mod.ModId', '@mod.KvTags[1].Value')">
+                    Add
+                </button>
+            </div>
         </div>
     </div>
 }
@@ -31,17 +42,28 @@
     </button>
 }
 <script>
-    function AddMod(image,title,modId) 
-    {
-        if (document.getElementById(`mod-${modId}`)) return; // prevent duplicates
+    function AddMod(image, title, modId, dependencies = '') {
+        if (document.getElementById(`mod-${modId}`)) return;
+
+        // add dependencies first
+        if (dependencies) {
+            dependencies.split(',').forEach(dep => {
+                dep = dep.trim();
+                if (!dep) return;
+                // find the mod in the browser by title/devname and add it
+                const depEl = document.querySelector(`[data-devname="${dep}"]`);
+                if (depEl && !document.getElementById(`mod-${depEl.dataset.modid}`)) {
+                    AddMod(depEl.dataset.image, depEl.dataset.title, depEl.dataset.modid, depEl.dataset.dependencies);
+                }
+            });
+        }
 
         const list = document.getElementById("modList");
-
         const item = document.createElement("div");
         item.id = `mod-${modId}`;
-        item.className = "flex bg-main-800 rounded-lg p-2 my-1 items-center";
+        item.className = "flex bg-main-800 rounded-lg p-2 my-1 items-center gap-2";
         item.innerHTML = `
-          <img src="${image}" class="size-10 rounded object-cover shrink-0" onerror="this.style.display='none'"/>
+        <img src="${image}" class="size-10 rounded object-cover shrink-0" onerror="this.style.display='none'"/>
         <span class="flex-1 truncate">${title}</span>
         <button type="button" onclick="RemoveMod('${modId}')" class="text-red-400 hover:text-red-300 cursor-pointer shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -49,13 +71,23 @@
             </svg>
         </button>
         <input type="hidden" name="selectedMods" value="${modId}"/>
-        
     `;
         list.appendChild(item);
-        
+
+        const browserItem = document.getElementById(`browser-mod-${modId}`);
+        if (browserItem) {
+            browserItem.classList.add('border', 'border-yellow-500');
+            browserItem.querySelector('.mod-badge')?.classList.remove('hidden');
+        }
     }
+    
     function RemoveMod(modId) {
         document.getElementById(`mod-${modId}`)?.remove();
+        const browserItem = document.getElementById(`browser-mod-${modId}`);
+        if (browserItem) {
+            browserItem.classList.remove('border', 'border-yellow-500' );
+            browserItem.querySelector('.mod-badge').classList.add('hidden');
+        }
     }
     
 </script>
