@@ -47,7 +47,7 @@ public class BackupController : Controller
         string key = server.ServerType switch
         {
             GameSeverType.Terraria => "WORLDNAME",
-            GameSeverType.Tmodloader => "WORLDNAME",
+            GameSeverType.Tmodloader => "TMOD_WORLDNAME",
             GameSeverType.Minecraft => "TBD",
             GameSeverType.Valheim => "TBD",
 

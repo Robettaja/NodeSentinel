@@ -1,20 +1,44 @@
+using System.Text;
 using Microsoft.AspNetCore.SignalR;
 
 namespace web_server.Hubs;
 
-public class LogsHub: Hub
+public class LogsHub : Hub
 {
-    public async Task StreamLogs(string serverName)
+    private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromHours(1) };
+
+    public Task StreamLogs(string serverName)
     {
-        using var http = new HttpClient();
-        using var stream = await http.GetStreamAsync($"http://localhost:5106/container/{serverName}/logs/stream");
-        using var reader = new StreamReader(stream);
-        while (!reader.EndOfStream)
+        var clientId = Context.ConnectionId;
+        var clients = Clients;
+        var ct = Context.ConnectionAborted;
+
+        Task.Factory.StartNew(async () =>
         {
-            var line = await reader.ReadLineAsync();
-            if (line != null)
-                await Clients.Caller.SendAsync("ReceiveLog", line);
-        }
+            try
+            {
+                using var response = await _http.GetAsync(
+                    $"http://localhost:5106/container/{serverName}/logs/stream",
+                    HttpCompletionOption.ResponseHeadersRead, ct);
+
+                await using var stream = await response.Content.ReadAsStreamAsync(ct);
+                var buffer = new byte[256];
+
+                while (!ct.IsCancellationRequested)
+                {
+                    int bytesRead = await stream.ReadAsync(buffer, ct);
+                    if (bytesRead == 0) break;
+                    var text = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    await clients.Client(clientId).SendAsync("ReceiveLog", text, ct);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"StreamLogs error: {ex.Message}");
+            }
+        }, ct, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+        return Task.CompletedTask;
     }
-    
 }

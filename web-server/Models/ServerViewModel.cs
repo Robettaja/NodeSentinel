@@ -24,11 +24,20 @@ namespace web_server.Models
 
         public async Task GetBackups()
         {
-            Backups = await client.Backup[ActiveServer.ServerName].List.GetAsync(config =>
+            if(ActiveServer is null) return;
+            try
             {
-                config.QueryParameters.Type = (int)ActiveServer.ServerType;
-            }) ?? [];
-            Console.WriteLine(Backups.Count());
+                Backups = await client.Backup[ActiveServer.ServerName].List.GetAsync(config =>
+                {
+                    config.QueryParameters.Type = (int)ActiveServer.ServerType;
+                }) ?? [];
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public string GetServerImagePath()

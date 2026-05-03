@@ -1,6 +1,8 @@
 @using Humanizer
 @model ServerViewModel
 
+@if (@Model.ActiveServer != null)
+{
 <!-- Create Backupmodal -->
 <div id="backupCreateModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
     <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
@@ -36,7 +38,7 @@
 <div id="backupDeleteModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
     <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
         <!-- Modal content -->
-        <div class="relative bg-main-900 rounded-lg border border-main-800   p-4 md:p-6">
+        <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
             <!-- Modal header -->
             <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
                 <h3 class="text-lg font-medium text-heading">
@@ -71,7 +73,7 @@
 <div id="backupRestoreModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
     <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
         <!-- Modal content -->
-        <div class="relative bg-main-900 rounded-lg border border-main-800   p-4 md:p-6">
+        <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
             <!-- Modal header -->
             <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
                 <h3 class="text-lg font-medium text-heading">
@@ -210,5 +212,7 @@
             restoreModal.classList.toggle('flex');
         }
     </script>
+    
+}
 
     

@@ -35,13 +35,18 @@ public class ServerController : Controller
     [HttpPost]
     [Authorize]
     [Route("new server/terraria")]
-    [RequireAntiforgeryToken]
     public async Task<IActionResult> Terraria(TerrariaServerViewModel vm)
     {
+        
+        Server existing = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == vm.ServerName);
+        if (existing != null)
+        {
+            ModelState.AddModelError("ServerName", "A server with this name already exists.");
+            return View(vm);
+        }
         if (ModelState.IsValid)
         {
             User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
-            List<Server> terrariaServers = await DatabaseManipulator.GetMany<Server>(s => s != null);
             Dictionary<string, string> EnvData = new() {
                 {"SEED",vm.Seed},
                 {"MOTD",vm.MOTD},
@@ -79,12 +84,61 @@ public class ServerController : Controller
 
         return View();
     }
+
     [Route("new server/tmodloader")]
     [Authorize]
-    public async Task<IActionResult> Tmodloader()
+    public async Task<IActionResult> Tmodloader(TmodServerViewModel vm)
     {
+        
+        Server existing = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == vm.ServerName);
+        if (existing != null)
+        {
+            ModelState.AddModelError("ServerName", "A server with this name already exists.");
+            return View(vm);
+        }
+
+        if (ModelState.IsValid)
+        {
+            User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+            Dictionary<string, string> EnvData = new()
+            {
+                { "TMOD_WORLDSEED", vm.Seed },
+                { "TMOD_MOTD", vm.MOTD },
+                { "TMOD_MAXPLAYERS", vm.MaxPlayers.ToString() },
+                { "TMOD_LANGUAGE", vm.ToTerrariaLanguageCode(vm.Language) },
+                { "TMOD_WORLDNAME", vm.WorldName },
+                { "TMOD_DIFFICULTY", ((int)vm.Difficulty).ToString() },
+                { "TMOD_WORLDSIZE", ((int)vm.WorldSize).ToString() },
+                { "TMOD_PASS", vm.Password },
+                { "TMOD_ENABLEDMODS", "" },
+                { "TMOD_AUTODOWNLOAD", "" },
+            };
+            List<string> containerEnv = EnvData.Select(kvp => kvp.Key + "=" + kvp.Value).ToList();
+            Server newServer = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = GameSeverType.Tmodloader,
+                UserID = user.Id,
+                Env = EnvData,
+
+            };
+            await DatabaseManipulator.Save(newServer);
+
+            ContainerData cd = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = (int)GameSeverType.Tmodloader,
+                AttachStdin = true,
+                Tty = true,
+                Env = containerEnv,
+            };
+            await _client.Container.Create.PostAsync(cd);
+            return RedirectToAction("Index", "Home");
+
+        }
         return View();
     }
+
     [Route("new server/minecraft")]
     [Authorize]
     public async Task<IActionResult> Minecraft()

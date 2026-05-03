@@ -1,0 +1,87 @@
+@model TerrariaServerViewModel
+
+<div class="flex w-full justify-center items-center m-2 m-0">
+    <div class="flex items-center justify-start w-full max-w-4xl">
+        <h1 class="font-bold text-xl">Create new server</h1>
+        <img src="/images/tmodloader.png" alt="terraria logo" class="size-20 m-4 object-contain">
+    </div>
+</div>
+
+<div class="flex justify-center  flex-1 ">
+
+    <div
+        class="flex flex-col items-left bg-main-900 border border-main-800 rounded-lg w-full max-w-4xl space-y-2 h-fit  m-4 p-4">
+
+
+        <form class="space-y-3" asp-controller="Server" asp-action="Tmodloader" method="post">
+
+            <h2 class="font-semibold text-lg">Server settings</h2>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="ServerName">Server name <span class="text-red-600">*</span></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="ServerName">
+                <span asp-validation-for="ServerName" class="text-red-500"></span><br>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="MOTD"></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="MOTD">
+                <span asp-validation-for="MOTD" class="text-red-500"></span><br>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="MaxPlayers"></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="number" asp-for="MaxPlayers">
+                <span asp-validation-for="MaxPlayers" class="text-red-500"></span><br>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="Language"></label>
+                <select class="w-fit bg-main-800 p-2 rounded-lg" asp-for="Language"
+                    asp-items="Html.GetEnumSelectList<TerrariaLanguage>()"></select>
+                <span asp-validation-for="Language" class="text-red-500"></span><br>
+            </div>
+            <h2 class="font-semibold text-lg">World settings</h2>
+
+            <div class="flex flex-col space-y-2">
+                <label asp-for="WorldName">World name <span class="text-red-600">*</span></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="WorldName">
+                <span asp-validation-for="WorldName" class="text-red-500"></span><br>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="Seed"></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="Seed">
+                <span asp-validation-for="Seed" class="text-red-500"></span><br>
+            </div>
+            <div class="flex space-x-6">
+                <div class="flex flex-col space-y-2">
+                    <label asp-for="WorldSize"></label>
+                    <select class="w-fit bg-main-800 p-2 rounded-lg" asp-for="WorldSize"
+                        asp-items="Html.GetEnumSelectList<TerrariaWorldsize>()"></select>
+                    <span asp-validation-for="WorldSize" class="text-red-500"></span><br>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label asp-for="Difficulty"></label>
+                    <select class="w-fit bg-main-800 p-2 rounded-lg" asp-for="Difficulty"
+                        asp-items="Html.GetEnumSelectList<TerrariaDifficulty>()"></select>
+
+                    <span asp-validation-for="Difficulty" class="text-red-500"></span><br>
+                </div>
+            </div>
+
+            <h2 class="font-semibold text-lg">Security</h2>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="Password"></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="password" asp-for="Password">
+                <span asp-validation-for="Password" class="text-red-500"></span><br>
+            </div>
+            
+            <h2 class="font-semibold text-lg">Mods</h2>
+            <button class="w-fit bg-brand p-2 px-4 my-2 rounded-xl cursor-pointer hover:bg-blue-600"
+                type="submit">Create server</button>
+        </form>
+
+    </div>
+</div>
+<script>
+// window.addEventListener("beforeunload", function (e) {
+//     e.preventDefault();
+//     e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+// });
+</script>

@@ -60,10 +60,21 @@
                         .withUrl("/logsHub")
                         .build();
 
-                    connection.on("ReceiveLog", line => {
-                        const logs = document.getElementById("logs");
-                        logs.innerText += line + "\n";
-                        logs.scrollTop = logs.scrollHeight;
+                    connection.on("ReceiveLog", text => {
+                        const lines = text.split("\n");
+                        lines.forEach(line => {
+                            if (line.trim() === "") return;
+                            const p = document.createElement("p");
+                            p.textContent = line;
+                            logs.appendChild(p);
+                        });
+                        if (!scrollPending) {
+                            scrollPending = true;
+                            requestAnimationFrame(() => {
+                                logs.scrollTop = logs.scrollHeight;
+                                scrollPending = false;
+                            });
+                        }
                     });
 
                     try {

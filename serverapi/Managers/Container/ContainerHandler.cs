@@ -164,7 +164,7 @@ namespace serverapi.Managers.Container
             };
 
             var stream = await client.Containers.GetContainerLogsAsync(name, true, parameters, ct);
-            var buffer = new byte[4096];
+            var buffer = new byte[1024];
 
             try
             {
@@ -172,16 +172,12 @@ namespace serverapi.Managers.Container
                 {
                     var result = await stream.ReadOutputAsync(buffer, 0, buffer.Length, ct);
                     if (result.EOF) break;
-
-                    var text = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                    await httpResponse.WriteAsync(text, ct);
+                    if (result.Count == 0) continue;
+                    await httpResponse.Body.WriteAsync(buffer.AsMemory(0, result.Count), ct);
                     await httpResponse.Body.FlushAsync(ct);
                 }
             }
-            catch (OperationCanceledException)
-            {
-            }
+            catch (OperationCanceledException) { }
         }
         public static async Task<SystemData?> Stats(string name, CancellationToken ct)
         {
