@@ -1,0 +1,61 @@
+@model List<server.Models.Tables.TerrariaMod>
+
+@foreach (var mod in Model ?? [])
+{
+    <div class="bg-main-800 rounded-lg p-2 my-2 flex flex-col justify-between">
+        <div class="flex justify-between items-center">
+            <div class="flex space-x-4 gap-4">
+                <img class="size-20 mx-2" src="@mod.PreviewUrl"/>
+                <div class="m-x-2">
+                    <p class="text-white font-bold text-lg">@mod.Title</p>
+                    <p class="text-white">@(int.Parse(mod.ModSize) / 1000000)MB</p>
+                    <p class="text-white">Views @mod.Views</p>
+                </div>
+                
+            </div>
+            <button class="text-white p-2 px-4 bg-main-900  hover:bg-main-700 cursor-pointer  h-fit rounded-lg" onclick="AddMod('@mod.PreviewUrl','@mod.Title','@mod.ModId')">Add</button>
+
+        </div>
+    </div>
+}
+
+@if (ViewData["HasMore"] is bool hasMore && hasMore && ViewData["Page"] is int page)
+{
+    <button class="w-full text-center text-main-200 p-2 cursor-pointer hover:text-white bg-main-800 rounded-lg my-2"
+            hx-get="/Server/LoadMore?page=@(page + 1)"
+            hx-trigger="click"
+            hx-swap="outerHTML"
+            hx-target="this"
+            hx-include="[name='search']">
+        Load more
+    </button>
+}
+<script>
+    function AddMod(image,title,modId) 
+    {
+        if (document.getElementById(`mod-${modId}`)) return; // prevent duplicates
+
+        const list = document.getElementById("modList");
+
+        const item = document.createElement("div");
+        item.id = `mod-${modId}`;
+        item.className = "flex bg-main-800 rounded-lg p-2 my-1 items-center";
+        item.innerHTML = `
+          <img src="${image}" class="size-10 rounded object-cover shrink-0" onerror="this.style.display='none'"/>
+        <span class="flex-1 truncate">${title}</span>
+        <button type="button" onclick="RemoveMod('${modId}')" class="text-red-400 hover:text-red-300 cursor-pointer shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+            </svg>
+        </button>
+        <input type="hidden" name="selectedMods" value="${modId}"/>
+        
+    `;
+        list.appendChild(item);
+        
+    }
+    function RemoveMod(modId) {
+        document.getElementById(`mod-${modId}`)?.remove();
+    }
+    
+</script>

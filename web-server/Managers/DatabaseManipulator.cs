@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using web_server.Models.Tables;
+
 namespace web_server.Managers;
 
 public static class DatabaseManipulator
@@ -95,6 +97,29 @@ public static class DatabaseManipulator
         }
         return [];
 
+    }
+
+    public static async Task<List<T>> GetPaged<T>(
+        Expression<Func<T, bool>> filter,
+        int page,
+        int pageSize,
+        Expression<Func<T, object>>? sortField = null,
+        bool ascending = true) where T : SaveableObject
+    {
+        var table = database.GetCollection<T>(typeof(T).Name);
+        var query = table.Find(filter);
+
+        if (sortField != null)
+        {
+            query = ascending
+                ? query.SortBy(sortField)
+                : query.SortByDescending(sortField);
+        }
+
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
     }
     public static async Task DeleteOne<T>(Expression<Func<T, bool>> filter)
     {

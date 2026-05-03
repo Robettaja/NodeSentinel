@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Kiota.Abstractions.Serialization;
 using MongoDB.Driver.Core.Servers;
+using server.Models.Tables;
 using web_server.Managers;
 using web_server.Models;
 using web_server.Models.Tables;
@@ -31,6 +32,16 @@ public class ServerController : Controller
     {
         return View(new TerrariaServerViewModel());
     }
+    [Route("new server/tmodloader")]
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Tmodloader()
+    {
+        TmodServerViewModel vm = new();
+        await vm.LoadMods();
+        return View(vm);
+    }
+    
 
     [HttpPost]
     [Authorize]
@@ -87,6 +98,7 @@ public class ServerController : Controller
 
     [Route("new server/tmodloader")]
     [Authorize]
+    [HttpPost]
     public async Task<IActionResult> Tmodloader(TmodServerViewModel vm)
     {
         
@@ -110,8 +122,8 @@ public class ServerController : Controller
                 { "TMOD_DIFFICULTY", ((int)vm.Difficulty).ToString() },
                 { "TMOD_WORLDSIZE", ((int)vm.WorldSize).ToString() },
                 { "TMOD_PASS", vm.Password },
-                { "TMOD_ENABLEDMODS", "" },
-                { "TMOD_AUTODOWNLOAD", "" },
+                { "TMOD_ENABLEDMODS", string.Join(",", vm.SelectedMods) },
+                { "TMOD_AUTODOWNLOAD", string.Join(",", vm.SelectedMods) },
             };
             List<string> containerEnv = EnvData.Select(kvp => kvp.Key + "=" + kvp.Value).ToList();
             Server newServer = new()
@@ -136,7 +148,20 @@ public class ServerController : Controller
             return RedirectToAction("Index", "Home");
 
         }
-        return View();
+        return View(vm);
+    }
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> LoadMore(string search ="",int page = 1, int pageSize = 20)
+    {
+        var servers = await DatabaseManipulator.GetPaged<TerrariaMod>(
+            s => s.Title.ToLower().Contains(search.ToLower()), page, pageSize, m => m.Views, false);
+    
+        var hasMore = servers.Count == pageSize;
+    
+        ViewData["Page"] = page;
+        ViewData["HasMore"] = hasMore;
+        return PartialView("_TerrariaModList", servers);
     }
 
     [Route("new server/minecraft")]

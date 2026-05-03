@@ -40,23 +40,28 @@ public class HomeController(PostsClient client) : Controller
     [Authorize]
     public async Task<IActionResult> Start(string? serverName)
     {
+        
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
         await _client.Container[serverName].Start.PostAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Home", new {serverId = server.Id.ToString()});
 
     }
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Restart(string? serverName)
     {
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
         await _client.Container[serverName].Restart.PostAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Home", new {serverId = server.Id.ToString()});
     }
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Stop(string? serverName)
     {
+        
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
         await _client.Container[serverName].Stop.PostAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Home", new {serverId = server.Id.ToString()});
     }
     [HttpGet]
     [Authorize]

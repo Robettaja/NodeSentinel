@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using server.Models.Tables;
+using web_server.Managers;
 
 namespace web_server.Models
 {
@@ -25,6 +27,11 @@ namespace web_server.Models
         [DisplayName("Server password")]
         public string? Password { get; set; }
 
+        public List<TerrariaMod> Mods { get; set; } = [];
+        public List<string> SelectedMods { get; set; } = [];
+        public bool HasMoreMods { get; set; }
+        public int ModPage { get; set; } = 1;
+
         public string ToTerrariaLanguageCode(TerrariaLanguage language) => language switch
         {
             TerrariaLanguage.English => "en-US",
@@ -38,6 +45,15 @@ namespace web_server.Models
             TerrariaLanguage.Polish => "pl-PL",
             _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
         };
+
+        public async Task LoadMods()
+        {
+            int pageSize = 20;
+            Mods = await DatabaseManipulator.GetPaged<TerrariaMod>(
+                _ => true, 1, pageSize, m => m.Views, ascending: false) ?? [];
+            HasMoreMods = Mods.Count == pageSize;
+            ModPage = 1;
+        }
     }
 
 }

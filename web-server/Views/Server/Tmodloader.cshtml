@@ -1,4 +1,34 @@
-@model TerrariaServerViewModel
+@model TmodServerViewModel 
+
+<dialog class="bg-main-900 w-full" id="modBrowser">
+    <div class="sticky top-0 bg-main-900 rounded p-2">
+        <div class="flex items-center gap-2">
+            <input class="bg-main-800 text-white rounded-lg p-2 px-4 flex-1 "
+                   placeholder="Search mods"
+                   type="text"
+                   name="search"
+                   hx-get="/Server/LoadMore"
+                   hx-trigger="keyup changed delay:500ms"
+                   hx-target="#mod-list"
+                   hx-swap="innerHTML"/>
+            
+            <button  class="text-white" type="button" commandfor="modBrowser" command="close" class="cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div id="mod-list">
+        @{
+            ViewData["HasMore"] = Model.HasMoreMods;
+            ViewData["Page"] = Model.ModPage;
+            ViewData["Search"] = "";
+        }
+        <partial name="_TerrariaModList" model="@Model.Mods"/>
+    </div>
+</dialog>
+
 
 <div class="flex w-full justify-center items-center m-2 m-0">
     <div class="flex items-center justify-start w-full max-w-4xl">
@@ -6,6 +36,8 @@
         <img src="/images/tmodloader.png" alt="terraria logo" class="size-20 m-4 object-contain">
     </div>
 </div>
+
+
 
 <div class="flex justify-center  flex-1 ">
 
@@ -73,6 +105,13 @@
             </div>
             
             <h2 class="font-semibold text-lg">Mods</h2>
+            <div>
+                <button type="button" class="bg-main-800 p-2 px-4 rounded-lg cursor-pointer hover:bg-main-700" command="show-modal" commandfor="modBrowser" >Browse mods</button> 
+            </div> 
+            <div id="modList">
+                
+            </div>
+            
             <button class="w-fit bg-brand p-2 px-4 my-2 rounded-xl cursor-pointer hover:bg-blue-600"
                 type="submit">Create server</button>
         </form>
@@ -80,6 +119,12 @@
     </div>
 </div>
 <script>
+
+    // function openModBrowser() {
+    //     const modal = document.getElementById("modBrowser")
+    //     modal.classList.toggle('hidden');
+    //     modal.classList.toggle('flex');
+    // }
 // window.addEventListener("beforeunload", function (e) {
 //     e.preventDefault();
 //     e.returnValue = "You have unsaved changes. Are you sure you want to leave?";

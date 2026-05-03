@@ -54,6 +54,7 @@ public class BackupController : Controller
         };
         try
         {
+            Console.WriteLine(server.Env[key]);
             var request = new KiotaPosts.Client.Models.CreateBackupRequest
             {
                 BackupName = backupName,
@@ -65,7 +66,8 @@ public class BackupController : Controller
         catch (Exception ex)
         {
         }
-        return RedirectToAction(nameof(Index));
+        
+        return RedirectToAction("Index", "Backup", new {serverId = server.Id.ToString()});
     }
 
     [Authorize]
@@ -89,7 +91,8 @@ public class BackupController : Controller
         {
             
         }
-        return RedirectToAction(nameof(Index));
+        
+        return RedirectToAction("Index", "Backup", new {serverId = server.Id.ToString()});
     }
     
     [Authorize]
@@ -113,7 +116,7 @@ public class BackupController : Controller
         {
             
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Index", "Backup", new {serverId = server.Id.ToString()});
     }
     
     
