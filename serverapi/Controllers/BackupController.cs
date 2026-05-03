@@ -34,6 +34,7 @@ public class BackupController : Controller
     [HttpDelete("{serverName}/delete")]
     public async Task<IActionResult> Delete(string serverName, ServerType type, string backupName)
     {
+        Console.WriteLine("deleted");
         await IBackupManager.GetBackupManager()[type].Delete(serverName, backupName);
         return Ok();
 

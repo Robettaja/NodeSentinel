@@ -67,6 +67,54 @@ public class BackupController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> DeleteBackup(string? serverName, string? backupName)
+    {
+        User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
+        
+        if (server is null || server.UserID != user.Id)
+            return Forbid();
+        try
+        {
+            await _client.Backup[serverName].DeletePath.DeleteAsync(config =>
+            {
+                config.QueryParameters.Type = (int)server.ServerType;
+                config.QueryParameters.BackupName = backupName;
+            });
+        }
+        catch (Exception e)
+        {
+            
+        }
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> RestoreBackup(string? serverName, string? backupName)
+    {
+        User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
+        
+        if (server is null || server.UserID != user.Id)
+            return Forbid();
+        try
+        {
+            await _client.Backup[serverName].Restore.PostAsync(config =>
+            {
+                config.QueryParameters.Type = (int)server.ServerType;
+                config.QueryParameters.BackupName = backupName;
+            });
+        }
+        catch (Exception e)
+        {
+            
+        }
+        return RedirectToAction(nameof(Index));
+    }
     
     
 }
