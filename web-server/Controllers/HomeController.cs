@@ -36,8 +36,11 @@ public class HomeController : Controller
             {
                 Servers = servers,
                 ActiveServer = selected,
-                ServerUrl = $"{_config["PostsApi:Ip"]}:{selected.Port}",
             };
+            if (selected != null)
+            {
+                vm.ServerUrl = $"{_config["PostsApi:Ip"]}:{selected.Port}";
+            } 
             vm.ActiveServerStatus = await vm.GetStatus(selected);
             return View(vm);
         }
