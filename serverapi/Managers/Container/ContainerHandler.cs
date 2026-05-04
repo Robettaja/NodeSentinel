@@ -44,7 +44,11 @@ namespace serverapi.Managers.Container
                     new List<PortBinding> { new() { HostPort = port.ToString() } }
                 }
             },
-                Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"]
+                Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"],
+                SecurityOpt = new List<string>
+                    {
+                        "seccomp=unconfined"
+                    }
             };
 
             CreateContainerParameters parameters = new()
