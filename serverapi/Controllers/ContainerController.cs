@@ -42,6 +42,15 @@ namespace serverapi.Controllers
             return Ok();
         }
 
+
+        [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
+        [HttpPost("{serverName}/port")]
+        public async Task<IActionResult> Port(string serverName)
+        {
+            string port = await ContainerHandler.GetHostPort(serverName, new CancellationToken());
+            return Ok(port);
+        }
+
         [HttpPost("{serverName}/command")]
         [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
         public async Task<IActionResult> Command(string serverName, [FromBody] string command, [FromQuery] ServerType type)
@@ -86,7 +95,6 @@ namespace serverapi.Controllers
             }
             return Ok(null);
         }
-        [HttpGet("availableport")]
 
         [HttpPost("{serverName}/edit")]
         public async Task<IActionResult> Edit(string serverName, ContainerData data)

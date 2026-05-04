@@ -16,12 +16,14 @@ builder.Services.AddSingleton(sp =>
     var factory = sp.GetRequiredService<IHttpClientFactory>();
     var httpClient = factory.CreateClient();
     var authProvider = new AnonymousAuthenticationProvider();
+    
+    var config = sp.GetRequiredService<IConfiguration>();
     var adapter = new HttpClientRequestAdapter(
         authProvider,
         httpClient: httpClient
     )
     {
-        BaseUrl = "http://localhost:5106"
+        BaseUrl = $"{config["PostsApi:BaseUrl"]}"
     };
     return new PostsClient(adapter);
 });

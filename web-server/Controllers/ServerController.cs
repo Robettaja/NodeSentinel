@@ -77,7 +77,6 @@ public class ServerController : Controller
                 Env = EnvData,
 
             };
-            await DatabaseManipulator.Save(newServer);
 
             ContainerData cd = new()
             {
@@ -88,7 +87,11 @@ public class ServerController : Controller
                 Env = containerEnv,
             };
             await _client.Container.Create.PostAsync(cd);
-            return RedirectToAction("Index", "Home");
+            
+            newServer.Port = await _client.Container[vm.ServerName].Port.PostAsync();
+            await DatabaseManipulator.Save(newServer);
+            
+            return RedirectToAction("Index", "Home", new {serverId = newServer.Id.ToString()});
 
         }
 
@@ -134,7 +137,6 @@ public class ServerController : Controller
                 Env = EnvData,
 
             };
-            await DatabaseManipulator.Save(newServer);
 
             ContainerData cd = new()
             {
@@ -145,7 +147,11 @@ public class ServerController : Controller
                 Env = containerEnv,
             };
             await _client.Container.Create.PostAsync(cd);
-            return RedirectToAction("Index", "Home");
+            newServer.Port = await _client.Container[vm.ServerName].Port.PostAsync();
+            
+            await DatabaseManipulator.Save(newServer);
+            
+            return RedirectToAction("Index", "Home", new {serverId = newServer.Id.ToString()});
 
         }
         return View(vm);

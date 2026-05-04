@@ -261,6 +261,35 @@
                 }
             }
         },
+        "/container/{serverName}/port": {
+            "post": {
+                "tags": [
+                    "Container"
+                ],
+                "parameters": [
+                    {
+                        "name": "serverName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/container/{serverName}/command": {
             "post": {
                 "tags": [
@@ -422,38 +451,6 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/container/availableport": {
-            "get": {
-                "tags": [
-                    "Container"
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ContainerData"
-                            }
-                        },
-                        "text/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ContainerData"
-                            }
-                        },
-                        "application/*+json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ContainerData"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }

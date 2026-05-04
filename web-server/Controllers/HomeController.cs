@@ -12,9 +12,15 @@ using web_server.Models.Tables;
 
 namespace web_server.Controllers;
 
-public class HomeController(PostsClient client) : Controller
+public class HomeController : Controller
 {
-    private readonly PostsClient _client = client;
+    private readonly PostsClient _client;
+    private readonly IConfiguration _config;
+    public HomeController(IConfiguration config, PostsClient client)
+    {
+        _config = config;
+        _client = client;
+    }
 
     [HttpGet]
     public async Task<IActionResult> Index(string? serverId)
@@ -30,6 +36,7 @@ public class HomeController(PostsClient client) : Controller
             {
                 Servers = servers,
                 ActiveServer = selected,
+                ServerUrl = $"{_config["PostsApi:Ip"]}:{selected.Port}",
             };
             vm.ActiveServerStatus = await vm.GetStatus(selected);
             return View(vm);

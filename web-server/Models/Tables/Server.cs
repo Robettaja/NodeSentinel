@@ -6,6 +6,7 @@ namespace web_server.Models.Tables
     public class Server : SaveableObject
     {
         public string? ServerName { get; set; }
+        public string? Port { get; set; } = "0";
         public GameSeverType ServerType { get; set; }
         public Dictionary<string, string> Env { get; set; } = [];
         public DateTime CreatedAt { get; set; } = DateTime.Now;

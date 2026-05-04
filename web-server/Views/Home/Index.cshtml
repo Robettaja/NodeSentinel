@@ -5,8 +5,42 @@
 
 @if (User.Identity!.IsAuthenticated)
 {
+    
     if (Model.Servers != null && Model.Servers.Any())
     {
+        
+        <!-- Delete server modal-->
+        <div id="serverDeleteModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full space-y-2">
+            <div class="relative p-4 w-full max-w-xl max-h-full space-y-2">
+                <!-- Modal content -->
+                <div class="relative bg-main-900 rounded-lg border border-main-700   p-4 md:p-6">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between  pb-4 md:pb-5">
+                        <h3 class="text-lg font-medium text-heading">
+                            Are you sure you want to delete server? This action cannot be undone.
+                        </h3>
+                        <button type="button" class="cursor-pointer" onclick="openDeleteModal('')" >
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <form class="flex flex-col gap-1" asp-controller="Home" asp-action="Delete" method="post">
+                        <input type="hidden" name="serverName" value="@Model.ActiveServer.ServerName"/>
+                        <div class="flex items-center space-x-4 pt-4 md:pt-5">
+                            <button type="submit" class="bg-red-600 hover:bg-red-500 p-2 px-4 m-2 rounded-lg cursor-pointer flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                    <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd"/>
+                                </svg>
+                                Delete
+                            </button>
+                            <button type="button" class="bg-main-800 hover:bg-main-700 p-2 px-4 m-2 rounded-lg cursor-pointer" onclick="openDeleteModal('')">Close</button>
+                        </div>
+                    </form>
+                    
+                            
+                </div>
+            </div>
+        </div>
         <div class="flex items-center flex-col gap-3 w-full p-2 overflow-x-hidden">
             <partial name="_ServerInfo" model="@Model"/>
             <partial name="_SystemChart" model="@Model"/>
@@ -40,21 +74,25 @@
                         <p class="font-bold text-lg">Delete Server</p>
                         <p>Once you delete a server, there is no going back please be certain.</p>
                     </div>
-                    <form asp-action="Delete">
-                        <input type="hidden" name="serverName" value="@Model.ActiveServer.ServerName"/>
-                        <button class="flex bg-red-600 rounded-lg p-2 px-4 cursor-pointer hover:bg-red-500" type="submit">
+                        <button class="flex bg-red-600 rounded-lg p-2 px-4 cursor-pointer hover:bg-red-500" type="button" onclick="openDeleteModal()">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                                 <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd"/>
                             </svg>
                             Delete
                         </button>
-                    </form>
 
                 </div>
             </div>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
             <script>
+
+                function openDeleteModal() {
+                    const modal = document.getElementById("serverDeleteModal")
+                    modal.classList.toggle('hidden');
+                    modal.classList.toggle('flex');
+                }
+                
                 async function startLogs() {
                     const connection = new signalR.HubConnectionBuilder()
                         .withUrl("/logsHub")
@@ -84,9 +122,30 @@
                         console.error("SignalR error:", err);
                     }
                 }
-                startLogs();
-            </script>
 
+                function handleFormSubmit(form) {
+                    const btn = form.querySelector('button');
+                    const icon = btn.querySelector('.btn-icon');
+                    const spinner = btn.querySelector('.btn-spinner');
+                    const label = btn.querySelector('.btn-label');
+                    const originalLabel = label.textContent;
+
+                    btn.disabled = true;
+                    icon.classList.add('hidden');
+                    spinner.classList.remove('hidden');
+                    const text = label.textContent.trim();
+                    const verbMap = {
+                        "Stop": "Stopping...",
+                        "Start": "Starting...",
+                        "Restart": "Restarting...",
+                        "Delete": "Deleting..."
+                    };
+
+                    label.textContent = verbMap[text] || (text + "...");
+                }
+                startLogs();
+                
+            </script>
         </div>
         
     }

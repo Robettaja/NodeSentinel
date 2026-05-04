@@ -5,7 +5,15 @@ namespace web_server.Hubs;
 
 public class LogsHub : Hub
 {
+    private readonly string _baseUrl;
+    
     private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromHours(1) };
+
+    public LogsHub(IConfiguration config)
+    {
+        _baseUrl = config["PostsApi:BaseUrl"];
+    }
+    
 
     public Task StreamLogs(string serverName)
     {
@@ -18,7 +26,7 @@ public class LogsHub : Hub
             try
             {
                 using var response = await _http.GetAsync(
-                    $"http://localhost:5106/container/{serverName}/logs/stream",
+                    $"{_baseUrl}/container/{serverName}/logs/stream",
                     HttpCompletionOption.ResponseHeadersRead, ct);
 
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);

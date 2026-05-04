@@ -9,6 +9,7 @@ namespace web_server.Models
     {
         private PostsClient client;
         public List<Server>? Servers { get; set; }
+        public string? ServerUrl{ get; set; }
         public Server ActiveServer { get; set; }
         public string ActiveServerStatus { get; set; }
         public List<BackupItem>? Backups { get; set; } = [];

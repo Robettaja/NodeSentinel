@@ -4,6 +4,7 @@ using KiotaPosts.Client.Container.Item.Command;
 using KiotaPosts.Client.Container.Item.Delete;
 using KiotaPosts.Client.Container.Item.Edit;
 using KiotaPosts.Client.Container.Item.Logs;
+using KiotaPosts.Client.Container.Item.Port;
 using KiotaPosts.Client.Container.Item.Restart;
 using KiotaPosts.Client.Container.Item.Start;
 using KiotaPosts.Client.Container.Item.Stats;
@@ -42,6 +43,11 @@ namespace KiotaPosts.Client.Container.Item
         public global::KiotaPosts.Client.Container.Item.Logs.LogsRequestBuilder Logs
         {
             get => new global::KiotaPosts.Client.Container.Item.Logs.LogsRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The port property</summary>
+        public global::KiotaPosts.Client.Container.Item.Port.PortRequestBuilder Port
+        {
+            get => new global::KiotaPosts.Client.Container.Item.Port.PortRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The restart property</summary>
         public global::KiotaPosts.Client.Container.Item.Restart.RestartRequestBuilder Restart

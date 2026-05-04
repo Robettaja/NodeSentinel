@@ -61,6 +61,24 @@ namespace serverapi.Managers.Container
             await client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters(), ct);
             return true;
         }
+        public static async Task<string?> GetHostPort(string name, CancellationToken ct)
+        {
+            var container = await GetByName(name, ct);
+            if (container == null) return null;
+
+            var inspect = await client.Containers.InspectContainerAsync(container.ID, ct);
+
+            var ports = inspect.NetworkSettings?.Ports;
+            if (ports == null) return null;
+
+            // take first mapped port
+            var first = ports
+                .FirstOrDefault(p => p.Value != null && p.Value.Count > 0)
+                .Value?
+                .FirstOrDefault();
+
+            return first?.HostPort;
+        }
 
         protected static async Task PullImage(string image, CancellationToken ct)
         {
@@ -89,6 +107,8 @@ namespace serverapi.Managers.Container
                 );
             }
         }
+
+
         public static async Task Start(string name, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(name, ct);
