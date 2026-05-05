@@ -1,4 +1,25 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function handleFormSubmit(form) {
+    const btn = form.querySelector('button');
+    const icon = btn.querySelector('.btn-icon');
+    const spinner = btn.querySelector('.btn-spinner');
+    const label = btn.querySelector('.btn-label');
+    const originalLabel = label.textContent;
 
-// Write your JavaScript code.
+    btn.disabled = true;
+    if (icon) {
+        icon.classList.add('hidden');
+        
+    }
+    spinner.classList.remove('hidden');
+    const text = label.textContent.trim();
+    const verbMap = {
+        "Stop": "Stopping...",
+        "Start": "Starting...",
+        "Restart": "Restarting...",
+        "Delete": "Deleting...",
+        "Create": "Creating...",
+        "Restore": "Restoring...",
+    };
+
+    label.textContent = verbMap[text] || (text + "...");
+}

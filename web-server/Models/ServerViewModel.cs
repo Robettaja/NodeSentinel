@@ -41,16 +41,15 @@ namespace web_server.Models
             }
         }
 
-        public string GetServerImagePath()
+        public string GetServerImagePath(GameSeverType serverType)
         {
-            if (ActiveServer is null) return "";
-            GameSeverType type = ActiveServer.ServerType;
+            GameSeverType type = serverType;
             return type switch
             {
                 GameSeverType.Terraria =>"/Images/terraria.jpg",
                 GameSeverType.Tmodloader =>"/Images/tmodloader.png",
                 GameSeverType.Minecraft =>"/Images/minecraft.svg",
-                GameSeverType.Valheim =>"Images/valheim.png",
+                GameSeverType.Valheim =>"/Images/valheim.png",
                 _ => ""
 
             };

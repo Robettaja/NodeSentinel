@@ -1,0 +1,28 @@
+@model ServerViewModel
+
+<div class="mx-auto w-full max-w-2xl bg-main-900 rounded-lg border border-main-800 p-2 flex flex-col gap-2 my-2">
+    <h2 class="font-bold text-lg">Server list</h2>
+    <p>Server count @Model.Servers.Count()</p>
+    @foreach (var server in Model.Servers)
+    {
+        <a class="bg-main-800 rounded-lg" asp-action="Index" asp-controller="Home" asp-route-serverId="@server.Id">
+            <div class="flex gap-1 bg-main-800 rounded-lg p-2">
+                <img class="size-20 object-contain" src="@Model.GetServerImagePath(server.ServerType)"/>
+                <div>
+                    <p class="font-semibold font-lg">@server.ServerName</p>
+                    @{
+                        string status = await Model.GetStatus(server);
+                    }
+
+                    <p class="@(status.StartsWith("Running") ? "text-green-500" :
+                              status.StartsWith("Paused") ? "text-yellow-500" : "text-red-500")">
+                        @status
+                    </p>
+                    
+                </div>
+                
+            </div>
+        </a>
+        
+    }
+</div>

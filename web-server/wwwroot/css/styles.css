@@ -334,6 +334,10 @@
     width: calc(var(--spacing) * 20);
     height: calc(var(--spacing) * 20);
   }
+  .size-25 {
+    width: calc(var(--spacing) * 25);
+    height: calc(var(--spacing) * 25);
+  }
   .size-30 {
     width: calc(var(--spacing) * 30);
     height: calc(var(--spacing) * 30);
@@ -618,6 +622,9 @@
   }
   .bg-main-950 {
     background-color: var(--color-main-950);
+  }
+  .bg-red-400 {
+    background-color: var(--color-red-400);
   }
   .bg-red-500 {
     background-color: var(--color-red-500);

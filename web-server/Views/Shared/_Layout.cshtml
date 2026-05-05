@@ -11,6 +11,11 @@
 
 <body class="bg-main-950 flex">
 
+@{
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
 
 <header class="lg:sticky lg:top-0 lg:min-h-screen lg:w-fit w-0 bg-main-950">
     <nav id="navigation"
@@ -31,7 +36,7 @@
                 </a>
                 @if (User.Identity!.IsAuthenticated)
                 {
-                    <a class="flex p-1 m-1 space-x-1" asp-action="Index", asp-controller="Home">
+                    <a class="flex p-1 m-1 space-x-1 @(currentController == "Home" ? "bg-brand" : "") rounded-lg" asp-action="Index" asp-controller="Home">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -39,8 +44,7 @@
                         </svg>
                         <p>Dashboard</p>
                     </a>
-
-                    <a class="flex p-1 mx-1 space-x-1" asp-action="Index" asp-controller="Server">
+                    <a class="flex p-1 mx-1 space-x-1 @(currentController == "Server" ? "bg-brand" : "") rounded-lg" asp-action="Index" asp-controller="Server">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -49,7 +53,7 @@
                         <p>New Server</p>
                     </a>
 
-                    <a class="flex p-1 mx-1 space-x-1">
+                    <a class="flex p-1 mx-1 space-x-1 @(currentController == "Serverlist" ? "bg-brand" : "") rounded-lg" asp-action="Index" asp-controller="Serverlist">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -58,7 +62,7 @@
                         <p>Servers</p>
                     </a>
 
-                    <a class="flex p-1 mx-1 space-x-1" asp-action="Index" asp-controller="Backup">
+                    <a class="flex p-1 mx-1 space-x-1 @(currentController == "Backup" ? "bg-brand" : "") rounded-lg" asp-action="Index" asp-controller="Backup">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -67,7 +71,7 @@
                         <p>Backups</p>
                     </a>
 
-                    <a class="flex p-1 mx-1 space-x-1">
+                    <a class="flex p-1 mx-1 space-x-1 @(currentController == "Logs" ? "bg-brand" : "") rounded-lg" asp-action="Index" asp-controller="Logs">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
