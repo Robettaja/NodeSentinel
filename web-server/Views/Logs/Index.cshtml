@@ -1,0 +1,44 @@
+@model ServerViewModel
+
+<div class="mx-auto bg-main-900 rounded-lg border border-main-800 w-full max-w-2xl flex">
+    <img class="size-30 object-contain shrink-0" src="@Model.GetServerImagePath(@Model.ActiveServer.ServerType)">
+    <div class="space-x-1 space-y-3">
+        
+        <select class="bg-main-700 p-2 rounded-xl h-fit font-bold" name="serverId"
+                asp-items="@Model.GetServerSelectList()"
+                onchange="console.log(this.value); window.location.href='/Logs/Index?serverId=' + this.value">
+        </select>
+    </div>
+</div>
+
+<div class="mx-auto bg-main-900 rounded-lg border border-main-800 w-full max-w-2xl flex flex-col p-2 my-4 ">
+    <div class="flex items-center gap-1">
+        <div class="rounded-[1000px] bg-sky-600 size-3"></div> 
+        <p class="text-sky-600">Info</p>
+    </div>
+    
+    <div class="flex items-center gap-1">
+        <div class="rounded-[1000px] bg-yellow-500 size-3"></div> 
+        <p class="text-yellow-500">Warning</p>
+    </div>
+    
+    <div class="flex items-center gap-1">
+        <div class="rounded-[1000px] bg-red-600 size-3"></div> 
+        <p class="text-red-600">Error</p>
+    </div>
+    
+    <div class="flex items-center gap-1">
+        <div class="rounded-[1000px] bg-green-600 size-3"></div> 
+        <p class="text-green-600">Server started</p>
+    </div>
+
+</div>
+<div class="mx-auto bg-main-900 rounded-lg border border-main-800 w-full max-w-2xl flex flex-col p-2 max-h-96 overflow-y-scroll">
+    @foreach (var line in (await Model.GetLogs(Model.ActiveServer)).Split('\n'))
+    {
+        <pre class="whitespace-pre-wrap text-sm @(line.Contains("WARN", StringComparison.OrdinalIgnoreCase) ? "text-yellow-500" :
+                                                   line.Contains("ERROR", StringComparison.OrdinalIgnoreCase) ? "text-red-600" :
+                                                   line.Contains("INFO", StringComparison.OrdinalIgnoreCase) ? "text-sky-600" : "text-white")">@line</pre>
+    }
+</div>
+

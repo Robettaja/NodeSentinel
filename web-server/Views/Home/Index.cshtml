@@ -50,7 +50,7 @@
             <partial name="_ServerInfo" model="@Model"/>
             <partial name="_SystemChart" model="@Model"/>
             <div class="mx-0 w-full max-w-4xl h-full max-h-96 bg-main-900 rounded-xl border border-main-800 p-4">
-                <div class="overflow-scroll  h-full" id="logs"></div>
+                <div class=" whitespace-pre-wrap overflow-scroll  h-full" id="logs"></div>
             </div>
             <div class="mx-auto w-full max-w-4xl bg-main-900 rounded-xl border border-main-800 p-4">
                 <form class="flex" hx-post="/Home/Command" hx-target="#logs" hx-swap="beforeend" hx-on::after-request="this.reset()">

@@ -85,6 +85,21 @@ namespace web_server.Models
             }
         }
 
+        public async Task<string> GetLogs(Server server)
+        {
+            try
+            {
+                string Logs = await client.Container[server.ServerName].Logs.GetAsync();
+                return Logs;
+
+            }
+            catch (HttpRequestException)
+            {
+                
+            }
+            return "";
+            
+        }
     }
     
 }

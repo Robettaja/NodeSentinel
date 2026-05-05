@@ -45,15 +45,18 @@
     function AddMod(image, title, modId, dependencies = '') {
         if (document.getElementById(`mod-${modId}`)) return;
 
-        // add dependencies first
         if (dependencies) {
-            dependencies.split(',').forEach(dep => {
+            dependencies.split(',').forEach(async dep => {
                 dep = dep.trim();
                 if (!dep) return;
-                // find the mod in the browser by title/devname and add it
                 const depEl = document.querySelector(`[data-devname="${dep}"]`);
                 if (depEl && !document.getElementById(`mod-${depEl.dataset.modid}`)) {
                     AddMod(depEl.dataset.image, depEl.dataset.title, depEl.dataset.modid, depEl.dataset.dependencies);
+                } else {
+                    const res = await fetch(`/Server/GetMod?devname=${dep}`);
+                    if (!res.ok) return;
+                    const mod = await res.json();
+                    AddMod(mod.previewUrl, mod.title, mod.modId, mod.dependencies);
                 }
             });
         }

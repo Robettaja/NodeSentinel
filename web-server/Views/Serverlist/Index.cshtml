@@ -6,7 +6,7 @@
     @foreach (var server in Model.Servers)
     {
         <a class="bg-main-800 rounded-lg" asp-action="Index" asp-controller="Home" asp-route-serverId="@server.Id">
-            <div class="flex gap-1 bg-main-800 rounded-lg p-2">
+            <div class="flex gap-1 bg-main-800 hover:bg-main-700 rounded-lg p-2">
                 <img class="size-20 object-contain" src="@Model.GetServerImagePath(server.ServerType)"/>
                 <div>
                     <p class="font-semibold font-lg">@server.ServerName</p>

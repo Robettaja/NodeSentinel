@@ -156,7 +156,6 @@ namespace serverapi.Managers.Container
                 {
                     ShowStdout = true,
                     ShowStderr = true,
-                    Tail = "100",
                     Timestamps = false
                 };
 

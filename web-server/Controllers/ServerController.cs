@@ -169,6 +169,14 @@ public class ServerController : Controller
         ViewData["HasMore"] = hasMore;
         return PartialView("_TerrariaModList", servers);
     }
+    [HttpGet]
+    public async Task<IActionResult> GetMod(string devname)
+    {
+        var mod = await DatabaseManipulator.GetSingle<TerrariaMod>(m => m.KvTags.Any(t => t.Key == "name" && t.Value == devname));
+        if (mod == null) return NotFound();
+        var dependencies = mod.KvTags.ElementAtOrDefault(1)?.Value ?? "";
+        return Json(new { mod.PreviewUrl, mod.Title, mod.ModId, dependencies});
+    }
 
     [Route("new server/minecraft")]
     [Authorize]
