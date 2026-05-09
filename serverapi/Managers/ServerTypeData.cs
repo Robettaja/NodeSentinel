@@ -27,7 +27,7 @@ namespace serverapi.Managers
             {ServerType.TMODLOADER,new("inject","7777","jacobsmile/tmodloader1.4:latest","/data","TMOD_PORT")},
             {ServerType.MINECRAFT,new("rcon-cli","25565","itzg/minecraft-server:latest","/data","SERVER_PORT")},
             //TODO fix
-            {ServerType.VALHEIM,new("supervisorctl","2456","ghcr.io/community-valheim-tools/valheim-server","/config","")},
+            {ServerType.VALHEIM,new("supervisorctl","2456","ghcr.io/community-valheim-tools/valheim-server","/config","SERVER_PORT")},
 
         };
 

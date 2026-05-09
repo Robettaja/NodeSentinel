@@ -252,7 +252,62 @@ public class ServerController : Controller
     [Authorize]
     public async Task<IActionResult> Valheim()
     {
-        return View();
+        ValheimServerViewModel vm = new();
+        return View(vm);
+    }
+    [Route("new server/valheim")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Valheim( ValheimServerViewModel vm)
+    {
+        
+        Server existing = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == vm.ServerName);
+        if (existing != null)
+        {
+            ModelState.AddModelError("ServerName", "A server with this name already exists.");
+            return View(vm);
+        }
+
+        if (ModelState.IsValid)
+        {
+            
+            Dictionary<string, string> EnvData = new()
+            {
+                {"SERVER_NAME", vm.ServerName},
+                {"WORLD_NAME", vm.WorldName},
+                {"CROSSPLAY", vm.CrossPlay.ToString()},
+                {"SERVER_PASS", vm.Password},
+            };
+            
+            User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+            List<string> containerEnv = EnvData.Select(kvp => kvp.Key + "=" + kvp.Value).ToList();
+            Server newServer = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = GameSeverType.Valheim,
+                UserID = user.Id,
+                Env = EnvData,
+
+            };
+
+            ContainerData cd = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = (int)GameSeverType.Valheim,
+                AttachStdin = true,
+                Tty = true,
+                Env = containerEnv,
+            };
+            await _client.Container.Create.PostAsync(cd);
+            newServer.Port = await _client.Container[vm.ServerName].Port.PostAsync();
+            
+            await DatabaseManipulator.Save(newServer);
+            
+            return RedirectToAction("Index", "Home", new {serverId = newServer.Id.ToString()});
+            
+        }
+        
+        return View(vm);
     }
 
 }

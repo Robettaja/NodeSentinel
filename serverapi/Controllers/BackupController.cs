@@ -12,6 +12,7 @@ public class BackupController : Controller
     [HttpPost("{serverName}/create")]
     public async Task<IActionResult> Create(string serverName, [FromBody] CreateBackupRequest request)
     {
+        Console.WriteLine(request.Type);
         await IBackupManager.GetBackupManager()[request.Type].Create(request.BackupName, request.SaveSlot, serverName);
         return Ok("Created backup");
     }

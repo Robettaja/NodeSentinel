@@ -79,7 +79,6 @@ namespace serverapi.Managers.Container
             var ports = inspect.NetworkSettings?.Ports;
             if (ports == null) return null;
 
-            // take first mapped port
             var first = ports
                 .FirstOrDefault(p => p.Value != null && p.Value.Count > 0)
                 .Value?

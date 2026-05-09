@@ -9,34 +9,20 @@ public class ValheimBackupManager : IBackupManager
 
     public async Task Create(string backupName, string save, string serverName)
     {
-        await ContainerHandler.Command(
-            serverName,
-            "signal HUP valheim-backup",
-            ServerType.VALHEIM,
-            new CancellationToken()
-        );
-
-        string backupPath = PathManager.GetBackupPath(serverName);
-        Directory.CreateDirectory(backupPath);
-
-
         string serverPath = PathManager.GetServerPath(serverName);
-
+        string backupPath = PathManager.GetBackupPath(serverName);
         string sourcePath = Path.Combine(serverPath, "config", "worlds_local");
 
-        string dbFile = Path.Combine(sourcePath, $"{save}.db");
-        string fwlFile = Path.Combine(sourcePath, $"{save}.fwl");
+        Directory.CreateDirectory(backupPath);
+
+        if (!Directory.Exists(sourcePath))
+            throw new DirectoryNotFoundException($"Worlds directory not found: {sourcePath}");
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(
             new CreateContainerParameters
             {
                 Image = "alpine",
-                Cmd =
-                [
-                    "sh",
-                "-c",
-                $"tar -cf /backup/{backupName}.tar -C /source ."
-                ],
+                Cmd = ["sh", "-c", $"tar -cf /backup/{backupName}.tar -C /source ."],
                 HostConfig = new HostConfig
                 {
                     Binds =
@@ -49,10 +35,7 @@ public class ValheimBackupManager : IBackupManager
             }
         );
 
-        await ContainerHandler.client.Containers.StartContainerAsync(
-            response.ID,
-            new ContainerStartParameters()
-        );
+        await ContainerHandler.client.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
         await ContainerHandler.client.Containers.WaitContainerAsync(response.ID);
     }
 
@@ -80,7 +63,7 @@ public class ValheimBackupManager : IBackupManager
         string serverPath = PathManager.GetServerPath(serverName);
         string backupPath = PathManager.GetBackupPath(serverName);
 
-        string backupFile = Path.Combine(backupPath, $"{backupName}.tar");
+        string backupFile = Path.Combine(backupPath, $"{backupName}");
 
         if (!File.Exists(backupFile))
             throw new FileNotFoundException("Backup not found", backupFile);
@@ -98,7 +81,7 @@ public class ValheimBackupManager : IBackupManager
                 [
                     "sh",
                 "-c",
-                $"tar -xf /backup/{backupName}.tar -C /source"
+                $"tar -xf /backup/{backupName} -C /source"
                 ],
                 HostConfig = new HostConfig
                 {
@@ -122,7 +105,7 @@ public class ValheimBackupManager : IBackupManager
     {
         string backupPath = PathManager.GetBackupPath(serverName);
 
-        string tarFile = Path.Combine(backupPath, $"{backupName}.tar");
+        string tarFile = Path.Combine(backupPath, $"{backupName}");
 
         if (File.Exists(tarFile))
             File.Delete(tarFile);

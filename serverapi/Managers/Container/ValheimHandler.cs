@@ -43,13 +43,17 @@ namespace serverapi.Managers.Container
         {
             { $"{basePort}/udp",     new List<PortBinding> { new() { HostPort = basePort.ToString() } } },
             { $"{basePort + 1}/udp", new List<PortBinding> { new() { HostPort = (basePort + 1).ToString() } } },
-            { $"{basePort + 2}/udp", new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } } }
+            { $"{basePort + 2}/udp", new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } } },
+
         },
+
                 Binds =
                 [
                     $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/config:{serverSpec.DataLocation}",
             $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/binaries:/opt/valheim"
                 ],
+
+                SecurityOpt = new List<string> { "seccomp=unconfined" },
                 CapAdd = ["sys_nice"]
             };
 

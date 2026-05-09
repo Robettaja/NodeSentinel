@@ -1,0 +1,59 @@
+@model ValheimServerViewModel 
+
+<div class="flex w-full justify-center items-center m-2 m-0">
+    <div class="flex items-center justify-start w-full max-w-4xl">
+        <h1 class="font-bold text-xl">Create new server</h1>
+        <img src="/images/valheim.png" alt="valheim logo" class="size-20 m-4 object-contain">
+    </div>
+</div>
+
+<div class="flex justify-center  flex-1 ">
+
+    <div
+        class="flex flex-col items-left bg-main-900 border border-main-800 rounded-lg w-full max-w-4xl space-y-2 h-fit  m-4 p-4">
+
+
+        <form class="space-y-3" asp-controller="Server" asp-action="Valheim" method="post">
+
+            <h2 class="font-semibold text-lg">Server settings</h2>
+            <div class="flex flex-col space-y-2">
+                <label asp-for="ServerName">Server name <span class="text-red-600">*</span></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="ServerName">
+                <span asp-validation-for="ServerName" class="text-red-500"></span><br>
+            </div>
+            
+            <div class="flex flex-col gap-2 ">
+                <label>Crossplay enabled</label>
+                <input  class="size-5 "type="checkbox" asp-for="CrossPlay"/>
+            </div>
+            
+            <h2 class="font-semibold text-lg">World settings</h2>
+
+            <div class="flex flex-col space-y-2">
+                <label asp-for="WorldName">World name <span class="text-red-600">*</span></label>
+                <input class="bg-main-800 rounded-lg p-2 " type="text" asp-for="WorldName">
+                <span asp-validation-for="WorldName" class="text-red-500"></span><br>
+            </div>
+                
+            
+
+            <h2 class="font-semibold text-lg">Security</h2>
+            
+            <div class="flex flex-col space-y-2">
+                <label asp-for="Password">Password</label>
+                <input class="bg-main-800 rounded-lg p-2 " type="password" asp-for="Password">
+                <span asp-validation-for="Password" class="text-red-500"></span><br>
+            </div>
+            
+            <button class="w-fit bg-brand p-2 px-4 my-2 rounded-xl cursor-pointer hover:bg-blue-600"
+                type="submit">Create server</button>
+        </form>
+
+    </div>
+</div>
+<script>
+// window.addEventListener("beforeunload", function (e) {
+//     e.preventDefault();
+//     e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+// });
+</script>

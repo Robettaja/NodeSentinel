@@ -49,10 +49,9 @@ public class BackupController : Controller
             GameSeverType.Terraria => "WORLDNAME",
             GameSeverType.Tmodloader => "TMOD_WORLDNAME",
             GameSeverType.Minecraft => "LEVEL",
-            GameSeverType.Valheim => "TBD",
+            GameSeverType.Valheim => "WORLD_NAME",
 
         };
-        Console.WriteLine(server.ServerType);
         try
         {
             Console.WriteLine(server.Env[key]);
