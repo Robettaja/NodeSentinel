@@ -2,19 +2,19 @@ using System.Text;
 using Microsoft.AspNetCore.SignalR;
 
 namespace web_server.Hubs;
-
 public class LogsHub : Hub
 {
     private readonly string _baseUrl;
+    private readonly string _apiKey;
     
     private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromHours(1) };
 
     public LogsHub(IConfiguration config)
     {
         _baseUrl = config["PostsApi:BaseUrl"];
+        _apiKey = config["SecurityApi:ApiKey"];
     }
     
-
     public Task StreamLogs(string serverName)
     {
         var clientId = Context.ConnectionId;
@@ -25,8 +25,11 @@ public class LogsHub : Hub
         {
             try
             {
-                using var response = await _http.GetAsync(
-                    $"{_baseUrl}/container/{serverName}/logs/stream",
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{_baseUrl}/container/{serverName}/logs/stream");
+                request.Headers.Add("SecurityApi", _apiKey);
+
+                using var response = await _http.SendAsync(request,
                     HttpCompletionOption.ResponseHeadersRead, ct);
 
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);

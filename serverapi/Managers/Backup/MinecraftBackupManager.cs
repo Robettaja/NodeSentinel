@@ -44,7 +44,7 @@ public class MinecraftBackupManager : IBackupManager
     {
         string serverPath = PathManager.GetServerPath(serverName);
         string backupPath = PathManager.GetBackupPath(serverName);
-        string backupFile = Path.Combine(backupPath, backupName + ".tar");
+        string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
@@ -58,7 +58,7 @@ public class MinecraftBackupManager : IBackupManager
     public async Task Delete(string serverName, string backupName)
     {
         string backupPath = PathManager.GetBackupPath(serverName);
-        string backupFile = Path.Combine(backupPath, backupName + ".tar");
+        string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
         Directory.Delete(backupFile);

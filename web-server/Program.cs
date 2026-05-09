@@ -14,16 +14,24 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton(sp =>
 {
     var factory = sp.GetRequiredService<IHttpClientFactory>();
-    var httpClient = factory.CreateClient();
-    var authProvider = new AnonymousAuthenticationProvider();
+    var httpClient = new HttpClient(new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
+    
     
     var config = sp.GetRequiredService<IConfiguration>();
-    var adapter = new HttpClientRequestAdapter(
-        authProvider,
+    var apiKey = config.GetValue<string>("SecurityApi:ApiKey");
+    Console.WriteLine($"API KEY: '{apiKey}'");
+    httpClient.DefaultRequestHeaders.Add("SecurityApi", apiKey);
+    
+    
+     var adapter = new HttpClientRequestAdapter(
+        new AnonymousAuthenticationProvider(),
         httpClient: httpClient
     )
     {
-        BaseUrl = $"{config["PostsApi:BaseUrl"]}"
+        BaseUrl = config["PostsApi:BaseUrl"]
     };
     return new PostsClient(adapter);
 });

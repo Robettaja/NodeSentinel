@@ -1,5 +1,6 @@
 
 using System.Text.Json.Serialization;
+using serverapi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,7 @@ else
 }
 
 app.UseHttpsRedirection();
-// app.UseMiddleware<ApiKeyMiddleware>();
+app.UseMiddleware<ApiKeyMiddleware>();
 app.UseRouting();
 
 app.UseAuthorization();
