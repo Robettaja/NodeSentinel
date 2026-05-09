@@ -13,42 +13,46 @@ namespace serverapi.Managers.Container
                 new Uri("unix:///var/run/docker.sock")
             ).CreateClient();
         }
+
         public virtual async Task<bool> Create(ContainerData containerData, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
             if (container != null) return false;
+
             var containers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
 
-            var usedPorts = containers
-                .SelectMany(c => c.Ports)
-                .Select(p => (int)p.PublicPort)
-                .Where(p => p > 0)
-                .ToList();
+            var usedPorts = new List<int>();
+            foreach (var c in containers)
+            {
+                var inspect = await client.Containers.InspectContainerAsync(c.ID);
+                var ports = inspect.HostConfig.PortBindings?
+                    .SelectMany(p => p.Value ?? [])
+                    .Select(b => int.TryParse(b.HostPort, out var p) ? p : 0)
+                    .Where(p => p > 0);
 
-            string defaultPort = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultPort;
-
-            var port = PortFinder.GetNextAvailablePort(int.Parse(defaultPort), usedPorts);
-            containerData.Env.Add($"{ServerTypeData.SPECIFICS[containerData.ServerType].PortEnv}=\"{port}\"");
-
-            string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
-            await PullImage(image, ct);
+                if (ports != null)
+                    usedPorts.AddRange(ports);
+            }
 
             var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
+            var port = PortFinder.GetNextAvailablePort(int.Parse(serverSpec.DefaultPort), usedPorts);
+
+            containerData.Env.Add($"{serverSpec.PortEnv}=\"{port}\"");
+
+            string image = serverSpec.DefaultImage;
+            await PullImage(image, ct);
 
             HostConfig hostConfig = new()
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
+        {
             {
-                {
-                    $"{serverSpec.DefaultPort}/tcp",
-                    new List<PortBinding> { new() { HostPort = port.ToString() } }
-                }
-            },
+                $"{serverSpec.DefaultPort}/tcp",
+                new List<PortBinding> { new() { HostPort = port.ToString() } }
+            }
+        },
                 Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"],
-                SecurityOpt = new List<string>
-                    {
-                        "seccomp=unconfined"
-                    }
+                SecurityOpt = new List<string> { "seccomp=unconfined" }
             };
 
             CreateContainerParameters parameters = new()

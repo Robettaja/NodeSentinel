@@ -42,6 +42,76 @@ public class ServerController : Controller
         return View(vm);
     }
     
+    [Route("new server/minecraft")]
+    [Authorize]
+    public async Task<IActionResult> Minecraft()
+    {
+        MinecraftServerViewModel vm = new();
+        return View(vm);
+    }
+    
+    
+    [Route("new server/minecraft")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Minecraft(MinecraftServerViewModel vm)
+    {
+        
+        Server existing = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == vm.ServerName);
+        if (existing != null)
+        {
+            ModelState.AddModelError("ServerName", "A server with this name already exists.");
+            return View(vm);
+        }
+        
+        if (ModelState.IsValid)
+        {
+            
+            User user = await DatabaseManipulator.GetSingle<User>(u => u.Username == User.Identity!.Name);
+            Dictionary<string, string> EnvData = new() {
+                {"EULA","TRUE"},
+                {"LEVEL",vm.WorldName},
+                {"TYPE",vm.ServerType.ToString().ToUpper()},
+                {"DIFFICULTY",vm.Difficulty.ToString().ToLower()},
+                {"LEVEL_TYPE",vm.WorldType.ToString().ToUpper()},
+                {"MODE",vm.Mode.ToString().ToLower()},
+                {"SEED",vm.Seed},
+                {"MOTD",vm.Motd},
+                {"PVP",vm.PvpMode.ToString()},
+                {"MAXPLAYERS",vm.MaxPlayers.ToString()},
+                {"WORLDNAME",vm.WorldName},
+                {"ENABLE_WHITELIST",vm.WhiteListEnabled.ToString()},
+            };
+            List<string> containerEnv = EnvData.Select(kvp => kvp.Key + "=" + kvp.Value).ToList();
+            
+            
+            Server newServer = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = GameSeverType.Minecraft,
+                UserID = user.Id,
+                Env = EnvData,
+            };
+            
+            ContainerData cd = new()
+            {
+                ServerName = vm.ServerName,
+                ServerType = (int)GameSeverType.Minecraft,
+                AttachStdin = true,
+                Tty = true,
+                Env = containerEnv,
+            };
+            await _client.Container.Create.PostAsync(cd);
+            
+            newServer.Port = await _client.Container[vm.ServerName].Port.PostAsync();
+            await DatabaseManipulator.Save(newServer);
+            
+            return RedirectToAction("Index", "Home", new {serverId = newServer.Id.ToString()});
+        
+        }
+        return View(vm);
+    }
+    
 
     [HttpPost]
     [Authorize]
@@ -178,12 +248,6 @@ public class ServerController : Controller
         return Json(new { mod.PreviewUrl, mod.Title, mod.ModId, dependencies});
     }
 
-    [Route("new server/minecraft")]
-    [Authorize]
-    public async Task<IActionResult> Minecraft()
-    {
-        return View();
-    }
     [Route("new server/valheim")]
     [Authorize]
     public async Task<IActionResult> Valheim()

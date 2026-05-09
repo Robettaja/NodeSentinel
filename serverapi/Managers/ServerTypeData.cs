@@ -34,7 +34,7 @@ namespace serverapi.Managers
     }
     public enum ServerType
     {
-        TERRARIA,
+        TERRARIA = 0,
         TMODLOADER,
         MINECRAFT,
         VALHEIM

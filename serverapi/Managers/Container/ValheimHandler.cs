@@ -10,25 +10,45 @@ namespace serverapi.Managers.Container
             ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
             if (container != null) return false;
 
-            string image = ServerTypeData.SPECIFICS[containerData.ServerType].DefaultImage;
-            await PullImage(image, ct);
+            var containers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+
+            var usedPorts = new List<int>();
+            foreach (var c in containers)
+            {
+                var inspect = await client.Containers.InspectContainerAsync(c.ID);
+                var ports = inspect.HostConfig.PortBindings?
+                    .SelectMany(p => p.Value ?? [])
+                    .Select(b => int.TryParse(b.HostPort, out var p) ? p : 0)
+                    .Where(p => p > 0);
+
+                if (ports != null)
+                    usedPorts.AddRange(ports);
+            }
 
             var serverSpec = ServerTypeData.SPECIFICS[containerData.ServerType];
-            // TODO FIX
-            int basePort = int.Parse("2");
+            int basePort = PortFinder.GetNextAvailablePort(int.Parse(serverSpec.DefaultPort), usedPorts);
+
+            // Reserve 3 consecutive ports for Valheim
+            while (usedPorts.Contains(basePort) || usedPorts.Contains(basePort + 1) || usedPorts.Contains(basePort + 2))
+                basePort++;
+
+            containerData.Env.Add($"{serverSpec.PortEnv}={basePort}");
+
+            string image = serverSpec.DefaultImage;
+            await PullImage(image, ct);
 
             HostConfig hostConfig = new()
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
-                {
-                    { $"{basePort}/udp", new List<PortBinding> { new() { HostPort = basePort.ToString() } } },
-                    { $"{basePort + 1}/udp", new List<PortBinding> { new() { HostPort = (basePort + 1).ToString() } } },
-                    { $"{basePort + 2}/udp", new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } } }
-                },
+        {
+            { $"{basePort}/udp",     new List<PortBinding> { new() { HostPort = basePort.ToString() } } },
+            { $"{basePort + 1}/udp", new List<PortBinding> { new() { HostPort = (basePort + 1).ToString() } } },
+            { $"{basePort + 2}/udp", new List<PortBinding> { new() { HostPort = (basePort + 2).ToString() } } }
+        },
                 Binds =
                 [
                     $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/config:{serverSpec.DataLocation}",
-                    $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/binaries:/opt/valheim"
+            $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/binaries:/opt/valheim"
                 ],
                 CapAdd = ["sys_nice"]
             };

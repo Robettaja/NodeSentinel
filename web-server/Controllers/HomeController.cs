@@ -95,7 +95,13 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Command(string? serverName, string? command)
     {
-        string response = await _client.Container[serverName].Command.PostAsync(command);
+        Server server = await DatabaseManipulator.GetSingle<Server>(s => s.ServerName == serverName);
+        
+        string response = await _client.Container[serverName].Command.PostAsync(command, config =>
+        {
+            config.QueryParameters.Type = (int)server.ServerType;
+            
+        }) ;
         return Content(response,"text/plain");
     }
 

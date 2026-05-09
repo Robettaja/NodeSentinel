@@ -55,6 +55,7 @@ namespace serverapi.Controllers
         [ProducesResponseType<string>(StatusCodes.Status200OK, "application/json")]
         public async Task<IActionResult> Command(string serverName, [FromBody] string command, [FromQuery] ServerType type)
         {
+            Console.WriteLine(type);
             string data = await ContainerHandler.Command(serverName, command, type, new CancellationToken());
             return Ok(data);
         }
