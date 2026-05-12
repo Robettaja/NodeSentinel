@@ -50,24 +50,39 @@ public class BackupController : Controller
             GameSeverType.Tmodloader => "TMOD_WORLDNAME",
             GameSeverType.Minecraft => "LEVEL",
             GameSeverType.Valheim => "WORLD_NAME",
-
         };
         try
         {
-            Console.WriteLine(server.Env[key]);
+            // Fetch existing backups
+            var existingBackups = await _client.Backup[serverName].List.GetAsync(config =>
+            {
+                config.QueryParameters.Type = (int)server.ServerType;
+            }) ?? [];
+
+            bool isDuplicate = existingBackups.Any(b => 
+                string.Equals(b.Name, backupName +".tar", StringComparison.OrdinalIgnoreCase));
+
+            if (isDuplicate)
+            {
+                TempData["Error"] = $"A backup named '{backupName}' already exists.";
+                return RedirectToAction("Index", "Backup", new { serverId = server.Id.ToString() });
+            }
+
             var request = new KiotaPosts.Client.Models.CreateBackupRequest
             {
                 BackupName = backupName,
                 SaveSlot = server.Env[key],
                 Type = (int)server.ServerType,
             };
-            var result = await _client.Backup[serverName].Create.PostAsync(request);
+
+            await _client.Backup[serverName].Create.PostAsync(request);
         }
         catch (Exception ex)
         {
+            TempData["Error"] = "Failed to create backup.";
         }
-        
-        return RedirectToAction("Index", "Backup", new {serverId = server.Id.ToString()});
+
+        return RedirectToAction("Index", "Backup", new { serverId = server.Id.ToString() });
     }
 
     [Authorize]
