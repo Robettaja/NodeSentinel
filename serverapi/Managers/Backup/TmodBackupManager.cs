@@ -14,7 +14,6 @@ public class TmodBackupManager : IBackupManager
 
         string serverPath = PathService.GetServerPath(serverName, true);
         string backupPath = PathService.GetBackupPath(serverName, true);
-        Directory.CreateDirectory(backupPath);
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
@@ -55,11 +54,6 @@ public class TmodBackupManager : IBackupManager
         string serverPath = PathService.GetServerPath(serverName, true);
         string backupPath = PathService.GetBackupPath(serverName, true);
 
-        string worldPath = Path.Combine(serverPath, "tModLoader", "Worlds");
-        string backupFile = Path.Combine(backupPath, backupName);
-
-        if (!File.Exists(backupFile))
-            throw new Exception($"Backup not found: {backupFile}");
 
         await ContainerHandler.Stop(serverName, new CancellationToken());
 
@@ -81,9 +75,6 @@ public class TmodBackupManager : IBackupManager
     public async Task Delete(string serverName, string backupName)
     {
         string backupPath = PathService.GetBackupPath(serverName, true);
-        string backupFile = Path.Combine(backupPath, backupName);
-
-        if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {

@@ -13,11 +13,6 @@ public class ValheimBackupManager : IBackupManager
         string backupPath = PathService.GetBackupPath(serverName, true);
         string sourcePath = Path.Combine(serverPath, "config", "worlds_local");
 
-        Directory.CreateDirectory(backupPath);
-
-        if (!Directory.Exists(sourcePath))
-            throw new DirectoryNotFoundException($"Worlds directory not found: {sourcePath}");
-
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(
             new CreateContainerParameters
             {
@@ -63,11 +58,6 @@ public class ValheimBackupManager : IBackupManager
 
         string serverPath = PathService.GetServerPath(serverName, true);
         string backupPath = PathService.GetBackupPath(serverName, true);
-
-        string backupFile = Path.Combine(backupPath, $"{backupName}");
-
-        if (!File.Exists(backupFile))
-            throw new FileNotFoundException("Backup not found", backupFile);
 
         await ContainerHandler.Stop(serverName, CancellationToken.None);
 

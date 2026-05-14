@@ -55,9 +55,6 @@ public class TerrariaBackupManager : IBackupManager
     {
         string serverPath = PathService.GetServerPath(serverName, true);
         string backupPath = PathService.GetBackupPath(serverName, true);
-        string backupFile = Path.Combine(backupPath, backupName);
-
-        if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
         await ContainerHandler.Stop(serverName, new CancellationToken());
 
@@ -87,10 +84,6 @@ public class TerrariaBackupManager : IBackupManager
     public async Task Delete(string serverName, string backupName)
     {
         string backupPathHost = PathService.GetBackupPath(serverName, true);
-        string backupPath = PathService.GetBackupPath(serverName, false);
-        string backupFile = Path.Combine(backupPath, backupName);
-
-        if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
