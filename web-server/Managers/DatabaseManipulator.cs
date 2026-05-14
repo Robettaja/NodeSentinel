@@ -21,7 +21,7 @@ public static class DatabaseManipulator
         IConfigurationSection sections = config.GetSection("ConnectionStrings");
         databaseName = sections.GetValue<string>("DatabaseName");
         host = sections.GetValue<string>("MongoConnection");
-        address = new MongoServerAddress(host);
+        address = new MongoServerAddress(host, 27017);
         settings = new MongoClientSettings() { Server = address };
         client = new MongoClient(settings);
         database = client.GetDatabase(databaseName);

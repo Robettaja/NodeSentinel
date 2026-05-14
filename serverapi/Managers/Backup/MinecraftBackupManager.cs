@@ -12,8 +12,9 @@ public class MinecraftBackupManager : IBackupManager
     {
         await ContainerHandler.Command(serverName, "save-all", ServerType.MINECRAFT, new CancellationToken());
         await Task.Delay(3000);
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
+
+        string serverPath = PathService.GetServerPath(serverName, false);
+        string backupPath = PathService.GetBackupPath(serverName, false);
         string backupFile = Path.Combine(backupPath, backupName);
         Directory.CreateDirectory(backupPath);
 
@@ -23,7 +24,8 @@ public class MinecraftBackupManager : IBackupManager
 
     public async Task<List<BackupItem>> List(string serverName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+
+        string backupPath = PathService.GetBackupPath(serverName, false);
 
         if (!Directory.Exists(backupPath)) return [];
 
@@ -42,8 +44,9 @@ public class MinecraftBackupManager : IBackupManager
 
     public async Task Restore(string serverName, string backupName)
     {
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
+
+        string serverPath = PathService.GetServerPath(serverName, false);
+        string backupPath = PathService.GetBackupPath(serverName, false);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
@@ -57,7 +60,7 @@ public class MinecraftBackupManager : IBackupManager
 
     public async Task Delete(string serverName, string backupName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string backupPath = PathService.GetBackupPath(serverName, false);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");

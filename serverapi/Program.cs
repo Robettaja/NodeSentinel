@@ -1,5 +1,6 @@
 
 using System.Text.Json.Serialization;
+using serverapi.Managers;
 using serverapi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
 });
+PathService.Init(builder.Configuration);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -33,7 +35,7 @@ else
         });
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseMiddleware<ApiKeyMiddleware>();
 app.UseRouting();
 

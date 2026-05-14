@@ -5,6 +5,7 @@ namespace serverapi.Managers.Container
 {
     public class ValheimHandler : ContainerHandler
     {
+
         public override async Task<bool> Create(ContainerData containerData, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(containerData.ServerName, ct);
@@ -49,8 +50,8 @@ namespace serverapi.Managers.Container
 
                 Binds =
                 [
-                    $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/config:{serverSpec.DataLocation}",
-            $"{AppContext.BaseDirectory}servers/{containerData.ServerName}/binaries:/opt/valheim"
+                    $"{PathService.GetServerPath(containerData.ServerName,true)}/config:{serverSpec.DataLocation}",
+                    $"{PathService.GetServerPath(containerData.ServerName,true)}/binaries:/opt/valheim"
                 ],
 
                 SecurityOpt = new List<string> { "seccomp=unconfined" },

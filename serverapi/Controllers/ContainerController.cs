@@ -100,7 +100,7 @@ namespace serverapi.Controllers
         [HttpPost("{serverName}/edit")]
         public async Task<IActionResult> Edit(string serverName, ContainerData data)
         {
-            await ContainerHandler.Handlers()[data.ServerType].Edit(data, serverName, new CancellationToken());
+            // await ContainerHandler.Handlers()[data.ServerType].Edit(data, serverName, new CancellationToken());
             return Ok();
         }
 

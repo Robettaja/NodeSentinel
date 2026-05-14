@@ -1,0 +1,16 @@
+services:
+  serverapi:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - HostServerPath=${HostServerPath}
+      - HostBackupPath=${HostBackupPath}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      - ${HostServerPath}:/app/servers
+      - ${HostBackupPath}:/app/backups
+    restart: unless-stopped

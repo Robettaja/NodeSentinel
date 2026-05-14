@@ -1,5 +1,6 @@
 using KiotaPosts.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using web_server.Hubs;
@@ -10,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+    .SetApplicationName("web-server");  // ← important: consistent name across restarts
+
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton(sp =>
 {
@@ -18,18 +23,17 @@ builder.Services.AddSingleton(sp =>
     {
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     });
-    
-    
+
+
     var config = sp.GetRequiredService<IConfiguration>();
     var apiKey = config.GetValue<string>("SecurityApi:ApiKey");
-    Console.WriteLine($"API KEY: '{apiKey}'");
     httpClient.DefaultRequestHeaders.Add("SecurityApi", apiKey);
-    
-    
-     var adapter = new HttpClientRequestAdapter(
-        new AnonymousAuthenticationProvider(),
-        httpClient: httpClient
-    )
+
+
+    var adapter = new HttpClientRequestAdapter(
+       new AnonymousAuthenticationProvider(),
+       httpClient: httpClient
+   )
     {
         BaseUrl = config["PostsApi:BaseUrl"]
     };
@@ -56,12 +60,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseAuthorization();
 app.UseAntiforgery();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

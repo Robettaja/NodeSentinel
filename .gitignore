@@ -72,6 +72,7 @@ coverage/
 # Local secrets
 secrets.json
 appsettings.Development.json
+appsettings.Production.json
 
 # Node (if using frontend tooling)
 node_modules/
@@ -126,3 +127,5 @@ playwright-report/
 test-results/
 
 *.http
+serverapi/servers
+serverapi/backups

@@ -9,8 +9,8 @@ public class ValheimBackupManager : IBackupManager
 
     public async Task Create(string backupName, string save, string serverName)
     {
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string serverPath = PathService.GetServerPath(serverName, true);
+        string backupPath = PathService.GetBackupPath(serverName, true);
         string sourcePath = Path.Combine(serverPath, "config", "worlds_local");
 
         Directory.CreateDirectory(backupPath);
@@ -41,7 +41,7 @@ public class ValheimBackupManager : IBackupManager
 
     public async Task<List<BackupItem>> List(string serverName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string backupPath = PathService.GetBackupPath(serverName, false);
 
         if (!Directory.Exists(backupPath)) return [];
 
@@ -60,8 +60,9 @@ public class ValheimBackupManager : IBackupManager
 
     public async Task Restore(string serverName, string backupName)
     {
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
+
+        string serverPath = PathService.GetServerPath(serverName, true);
+        string backupPath = PathService.GetBackupPath(serverName, true);
 
         string backupFile = Path.Combine(backupPath, $"{backupName}");
 
@@ -103,7 +104,8 @@ public class ValheimBackupManager : IBackupManager
 
     public async Task Delete(string serverName, string backupName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+
+        string backupPath = PathService.GetBackupPath(serverName, false);
 
         string tarFile = Path.Combine(backupPath, $"{backupName}");
 

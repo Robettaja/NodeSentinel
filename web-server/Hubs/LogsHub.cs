@@ -2,11 +2,12 @@ using System.Text;
 using Microsoft.AspNetCore.SignalR;
 
 namespace web_server.Hubs;
+
 public class LogsHub : Hub
 {
     private readonly string _baseUrl;
     private readonly string _apiKey;
-    
+
     private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromHours(1) };
 
     public LogsHub(IConfiguration config)
@@ -14,7 +15,7 @@ public class LogsHub : Hub
         _baseUrl = config["PostsApi:BaseUrl"];
         _apiKey = config["SecurityApi:ApiKey"];
     }
-    
+
     public Task StreamLogs(string serverName)
     {
         var clientId = Context.ConnectionId;

@@ -11,9 +11,8 @@ public class TerrariaBackupManager : IBackupManager
     {
         await ContainerHandler.Command(serverName, "save", ServerType.TERRARIA, new CancellationToken());
         await Task.Delay(3000);
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
-        Directory.CreateDirectory(backupPath);
+        string serverPath = PathService.GetServerPath(serverName, true);
+        string backupPath = PathService.GetBackupPath(serverName, true);
 
         var response = await ContainerHandler.client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
@@ -35,7 +34,7 @@ public class TerrariaBackupManager : IBackupManager
 
     public async Task<List<BackupItem>> List(string serverName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string backupPath = PathService.GetBackupPath(serverName, false);
 
         if (!Directory.Exists(backupPath)) return [];
 
@@ -54,8 +53,8 @@ public class TerrariaBackupManager : IBackupManager
 
     public async Task Restore(string serverName, string backupName)
     {
-        string serverPath = PathManager.GetServerPath(serverName);
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string serverPath = PathService.GetServerPath(serverName, true);
+        string backupPath = PathService.GetBackupPath(serverName, true);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
@@ -87,7 +86,8 @@ public class TerrariaBackupManager : IBackupManager
 
     public async Task Delete(string serverName, string backupName)
     {
-        string backupPath = PathManager.GetBackupPath(serverName);
+        string backupPathHost = PathService.GetBackupPath(serverName, true);
+        string backupPath = PathService.GetBackupPath(serverName, false);
         string backupFile = Path.Combine(backupPath, backupName);
 
         if (!File.Exists(backupFile)) throw new Exception($"Backup '{backupName}' not found.");
@@ -98,7 +98,7 @@ public class TerrariaBackupManager : IBackupManager
             Cmd = ["sh", "-c", $"rm -f /backup/{backupName}"],
             HostConfig = new HostConfig
             {
-                Binds = [$"{backupPath}:/backup"],
+                Binds = [$"{backupPathHost}:/backup"],
                 AutoRemove = true
             }
         });

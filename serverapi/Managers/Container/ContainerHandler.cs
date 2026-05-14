@@ -4,7 +4,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 namespace serverapi.Managers.Container
 {
-    public abstract class ContainerHandler
+    public class ContainerHandler
     {
         public static DockerClient client;
         static ContainerHandler()
@@ -51,7 +51,7 @@ namespace serverapi.Managers.Container
                 new List<PortBinding> { new() { HostPort = port.ToString() } }
             }
         },
-                Binds = [$"{AppContext.BaseDirectory}servers/{containerData.ServerName}:{serverSpec.DataLocation}"],
+                Binds = [$"{PathService.GetServerPath(containerData.ServerName, true)}:{serverSpec.DataLocation}"],
                 SecurityOpt = new List<string> { "seccomp=unconfined" }
             };
 
@@ -250,37 +250,6 @@ namespace serverapi.Managers.Container
             return Encoding.UTF8.GetString(ms.ToArray()).Trim();
 
         }
-        public virtual async Task Edit(ContainerData data, string oldName, CancellationToken ct)
-        {
-            ContainerListResponse? container = await GetByName(oldName, ct);
-            if (container == null) return;
-
-            await Stop(oldName, ct);
-            await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true }, ct);
-
-            if (oldName != data.ServerName)
-            {
-                var oldPath = PathManager.GetServerPath(oldName);
-                if (Directory.Exists(oldPath))
-                {
-                    var moveContainer = await client.Containers.CreateContainerAsync(new CreateContainerParameters
-                    {
-                        Image = "alpine",
-                        Cmd = ["sh", "-c", $"mv /host/servers/{oldName} /host/servers/{data.ServerName}"],
-                        HostConfig = new HostConfig
-                        {
-                            Binds = [$"{AppContext.BaseDirectory}:/host"],
-                            AutoRemove = true
-                        }
-                    }, ct);
-
-                    bool started = await client.Containers.StartContainerAsync(moveContainer.ID, new ContainerStartParameters(), ct);
-                    await client.Containers.WaitContainerAsync(moveContainer.ID, ct);
-                }
-            }
-
-            await Create(data, ct);
-        }
         public static async Task Delete(string name, CancellationToken ct)
         {
             ContainerListResponse? container = await GetByName(name, ct);
@@ -293,15 +262,14 @@ namespace serverapi.Managers.Container
                     Force = true
                 }, ct);
 
-                string basePath = AppContext.BaseDirectory;
 
                 CreateContainerResponse cleanup = await client.Containers.CreateContainerAsync(new CreateContainerParameters
                 {
                     Image = "alpine",
-                    Cmd = ["sh", "-c", $"rm -rf /host/servers/{name} /host/backups/{name}"],
+                    Cmd = ["sh", "-c", $"rm -rf /servers/{name} /backups/{name}"],
                     HostConfig = new HostConfig
                     {
-                        Binds = [$"{basePath}:/host"],
+                        Binds = [$"{PathService.GetServerPath()}:/servers", $"{PathService.GetBackupPath()}:/backups"],
                         AutoRemove = true
                     }
                 }, ct);
