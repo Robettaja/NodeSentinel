@@ -52,7 +52,11 @@ namespace serverapi.Managers.Container
                 Name = containerData.ServerName,
                 Tty = containerData.Tty,
                 Entrypoint = ["/bin/sh"],
-                Cmd = ["-c", "\"apt-get update && apt-get install -y libicu-dev && /terraria-server/entrypoint.sh\""],
+                Cmd =
+                [
+                    "-c",
+                    "apt-get update && apt-get install -y libicu-dev && exec /terraria-server/entrypoint.sh"
+                ],
                 Image = image,
                 AttachStdin = containerData.AttachStdin,
                 HostConfig = hostConfig,
