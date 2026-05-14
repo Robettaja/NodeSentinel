@@ -1,6 +1,6 @@
 services:
   caddy:
-    image: caddy:<version>
+    image: caddy:2.11-alpine
     restart: unless-stopped
     ports:
       - "80:80"
@@ -11,7 +11,13 @@ services:
       - ./site:/srv
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - proxy
 
 volumes:
   caddy_data:
   caddy_config:
+
+networks:
+  proxy:
+    external: true

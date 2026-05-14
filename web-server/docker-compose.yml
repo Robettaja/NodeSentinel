@@ -20,6 +20,9 @@ services:
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys
 
     restart: unless-stopped
+    networks:
+      - internal
+      - proxy
 
   mongo:
     image: mongo:latest
@@ -29,3 +32,11 @@ services:
       - mongo-data:/data/db
 
     restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  proxy:
+    external: true
+  internal:
+

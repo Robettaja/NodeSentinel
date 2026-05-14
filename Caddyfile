@@ -1,0 +1,3 @@
+nodesentinel.nrth.xyz
+
+reverse_proxy nodesentinel-app:8080
