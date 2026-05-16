@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-NodeSentinel is dedicated server hosting and monitoring tool. Users can create servers with ease and start playing their favorite games, without needing knowledge to setup server. Users can monitor and use server inside web-UI.
+NodeSentinel is dedicated server hosting and monitoring tool. Users can create servers with ease and start playing their favorite games, without needing knowledge to setup server. Users can monitor and use server inside web-UI. NodeSentinel supports Terraria, tModLoader, Minecraft and Valheim server hosting.
 
 ## Hosting
 
-Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. Docker container will be used to deploy servers. Nginx is used to create reverse-proxy.
+Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. Docker container will be used to deploy servers. Caddy is used to create reverse-proxy. Both API and web-server started using Docker Compose.
 
 ## UI design
 
@@ -18,13 +18,15 @@ The database that this project uses is MongoDB. I chose MongoDB for this project
 
 ## API
 
-API is used so web-server and server manager can communicate with each other. My API is REST type. API is created on Dotnet MVC project.
+API is used so web-server and server manager can communicate with each other. My API is REST type. API is created on Dotnet MVC project. I used Openapi to create API schema and used kiota library to create C# classes from API-schema.
 
 ## Libraries & Dependencies
 
 - ASP.NET MVC
 - Docker.DotNet
 - HTMX
+- Openapi
+- Kiota
 - Chart.js
 - MongoDB
 
@@ -40,3 +42,5 @@ Visual structure of the project
 ## Known limitations
 
 - One server cant support many dedicated servers, due to one server infrastructure
+- Minecraft backups dont work probably due to how minecraft servers save.
+- Valheim backups are not tested, because i dont own Valheim :D.
