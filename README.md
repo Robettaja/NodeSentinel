@@ -58,3 +58,4 @@ Visual structure of the project
 - Valheim containers do not support manual saving from the web UI.
 - Mods are fetched once with no logic to refresh them. I already had the data, so why bother :D
 - The UI doesn't render correctly on Chromium-based browsers :D
+- Only works on Linux
