@@ -6,7 +6,7 @@ NodeSentinel is dedicated server hosting and monitoring tool. Users can create s
 
 ## Hosting
 
-Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. Docker container will be used to deploy servers. Caddy is used to create reverse-proxy. Both API and web-server started using Docker Compose.
+Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. I used one B1ms VM for web-server and larger B2s VM for server hosting. Docker container will be used to deploy servers. Caddy is used to create reverse-proxy. Both API and web-server started using Docker Compose.
 
 ## UI design
 
@@ -18,7 +18,13 @@ The database that this project uses is MongoDB. I chose MongoDB for this project
 
 ## API
 
-API is used so web-server and server manager can communicate with each other. My API is REST type. API is created on Dotnet MVC project. I used Openapi to create API schema and used kiota library to create C# classes from API-schema.
+API is used so web-server and server manager can communicate with each other. My API is REST type. API is created on Dotnet MVC project. I used Openapi to create API schema and used kiota library to create C# classes from API-schema. Everything happening on servers sending commands and getting server data is using Docker API.
+
+## Server creation
+Servers are created using Docker and Dotnet Docker library. Docker dotnet is library that interacts with Docker API. I used pre-made opensource server images to create servers more easily.
+
+## Backups
+I just copy world save to other directory. When Restoring backups i stop server and override save file with backup file.
 
 ## Libraries & Dependencies
 
@@ -44,3 +50,5 @@ Visual structure of the project
 - One server cant support many dedicated servers, due to one server infrastructure
 - Minecraft backups dont work probably due to how minecraft servers save.
 - Valheim backups are not tested, because i dont own Valheim :D.
+- Valheim container does not allow manually saving from web-UI.
+- Mods are fetched once and there is no logic for fetching it again. I had the data so why bother :D.
