@@ -1,30 +1,32 @@
 # NodeSentinel
 
 ## Project Overview
-
-NodeSentinel is dedicated server hosting and monitoring tool. Users can create servers with ease and start playing their favorite games, without needing knowledge to setup server. Users can monitor and use server inside web-UI. NodeSentinel supports Terraria, tModLoader, Minecraft and Valheim server hosting.
+NodeSentinel is a dedicated server hosting and monitoring tool. Users can create servers with ease and start playing their favorite games without needing knowledge of server setup. Users can monitor and manage servers inside the web UI. NodeSentinel supports Terraria, tModLoader, Minecraft and Valheim server hosting.
 
 ## Hosting
 
-Servers will be hosted on Azure. Virtual Machines will use Ubuntu server. I used one B1ms VM for web-server and larger B2s VM for server hosting. Docker container will be used to deploy servers. Caddy is used to create reverse-proxy. Both API and web-server started using Docker Compose.
+Servers are hosted on Azure. Virtual Machines use Ubuntu Server. I used one B1ms VM for the web server and a larger B2s VM for server hosting. Docker containers are used to deploy servers. Caddy is used as a reverse proxy. Both the API and web server are started using Docker Compose.
 
 ## UI design
 
-Main color palette for this project is tailwinds mist palette. Blue will be used as brand color. Design also includes obvious semantic colors for destructive action and etc. Project uses icons from Heroicons and Lucide. UI is created using html tailwind-css and JavaScript.
+The main color palette is Tailwind's mist palette. Blue is used as the brand color. The design also includes obvious semantic colors for destructive actions and so on. The project uses icons from Heroicons and Lucide. The UI is built with HTML, Tailwind CSS and JavaScript. The project only supports dark theme.
 
 ## Database
 
-The database that this project uses is MongoDB. I chose MongoDB for this project due to its simplicity and not needing a SQL database. NoSQL is also great because i dont know database structure exactly. There will be tables with different data. For example Env data for servers ,which will be different for every server type.
+The database for this project is MongoDB. I chose MongoDB for its simplicity — I didn't need a SQL database. NoSQL is also a great fit because I didn't know the exact database structure upfront. Different collections store different data; for example, env data for servers varies depending on the server type.
 
 ## API
 
-API is used so web-server and server manager can communicate with each other. My API is REST type. API is created on Dotnet MVC project. I used Openapi to create API schema and used kiota library to create C# classes from API-schema. Everything happening on servers sending commands and getting server data is using Docker API.
+The API allows the web server and server manager to communicate with each other. It is a REST API built on an ASP.NET MVC project. I used OpenAPI to create the API schema and the Kiota library to generate C# classes from it. Everything related to servers — sending commands and retrieving server data — goes through the Docker API. Only the web server knows the API key, so users cannot call the API directly. The API key is generated using the openssl command and is validated at the middleware level, so every request requires a valid key. Including when i am trying to retreive openapi schema, so i need to disable it :D.
 
-## Server creation
-Servers are created using Docker and Dotnet Docker library. Docker dotnet is library that interacts with Docker API. I used pre-made opensource server images to create servers more easily.
+## Security
+Argon2 hashing with salt is used to store user passwords. A private API key is used for communication between the web server and the server API. Users can only see their own servers.
+
+## Servers 
+Servers are created using Docker and the Docker.DotNet library, which interacts with the Docker API. I used pre-made open source server images to make server creation easier.
 
 ## Backups
-I just copy world save to other directory. When Restoring backups i stop server and override save file with backup file.
+World saves are backed up by copying them to a separate directory. When restoring a backup, the server is stopped and the save file is overwritten with the selected backup.
 
 ## Libraries & Dependencies
 
@@ -33,6 +35,9 @@ I just copy world save to other directory. When Restoring backups i stop server 
 - HTMX
 - Openapi
 - Kiota
+- Swagger UI
+- Humanizer
+- Argon2
 - Chart.js
 - MongoDB
 
@@ -47,8 +52,9 @@ Visual structure of the project
 
 ## Known limitations
 
-- One server cant support many dedicated servers, due to one server infrastructure
-- Minecraft backups dont work probably due to how minecraft servers save.
-- Valheim backups are not tested, because i dont own Valheim :D.
-- Valheim container does not allow manually saving from web-UI.
-- Mods are fetched once and there is no logic for fetching it again. I had the data so why bother :D.
+- One VM cannot support many dedicated servers due to the single-server infrastructure.
+- Minecraft backups don't work, probably due to how Minecraft servers handle saving.
+- Valheim backups are untested because I don't own Valheim :D
+- Valheim containers do not support manual saving from the web UI.
+- Mods are fetched once with no logic to refresh them. I already had the data, so why bother :D
+- The UI doesn't render correctly on Chromium-based browsers :D
